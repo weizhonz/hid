@@ -4,7 +4,7 @@ import tqdm
 
 from utils.eval_utils import accuracy
 from utils.logging import AverageMeter, ProgressMeter
-
+from utils.net_utils import updateScore
 
 __all__ = ["train", "validate", "modifier"]
 
@@ -54,7 +54,8 @@ def train(train_loader, model, criterion, optimizer, epoch, args, writer):
         # compute gradient and do SGD step
         optimizer.zero_grad()
         loss.backward()
-        optimizer.step()
+        updateScore(model)
+        # optimizer.step()
 
         # measure elapsed time
         batch_time.update(time.time() - end)

@@ -99,6 +99,13 @@ def accumulate(model, f):
 
     return acc
 
+def updateScore(model):
+    print(f"==> update Score of model")
+
+    for n, m in model.named_modules():
+        if hasattr(m, "scores"):
+            print(f"==> assign negative gradient to {n}.scores")
+            m.scores = -m.scores.grad
 
 class LabelSmoothing(nn.Module):
     """

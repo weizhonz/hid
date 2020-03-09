@@ -12,7 +12,6 @@ class ProgressMeter(object):
 
     def display(self, batch, tqdm_writer=True):
         entries = [self.prefix + self.batch_fmtstr.format(batch)]
-        print(self.meters)
         entries += [str(meter) for meter in self.meters]
         if not tqdm_writer:
             print("\t".join(entries))
