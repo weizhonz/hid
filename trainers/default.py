@@ -27,49 +27,43 @@ def train(train_loader, model, criterion, optimizer, epoch, args, writer):
     batch_size = train_loader.batch_size
     num_batches = len(train_loader)
     end = time.time()
-    images_0, target_0 = None, None
     for i, (images, target) in tqdm.tqdm(
         enumerate(train_loader), ascii=True, total=len(train_loader)
     ):
-        if i == 0:
-            images_0 = images
-            print (images_0[0])
-            target_0 = target
-            print (target_0[0:10])
         # measure data loading time
         data_time.update(time.time() - end)
 
         if args.gpu is not None:
-            images_0 = images_0.cuda(args.gpu, non_blocking=True)
+            images = images.cuda(args.gpu, non_blocking=True)
 
-        target_0 = target_0.cuda(args.gpu, non_blocking=True)
-        while True:
-            # compute output
-            output = model(images_0)
+        target = target.cuda(args.gpu, non_blocking=True)
 
-            loss = criterion(output, target_0)
-            # measure accuracy and record loss
-            acc1, acc5 = accuracy(output, target_0, topk=(1, 5))
-            # torch.Size([128, 3, 32, 32])
-            # 128
-            losses.update(loss.item(), images_0.size(0))
-            top1.update(acc1.item(), images_0.size(0))
-            top5.update(acc5.item(), images_0.size(0))
+        # compute output
+        output = model(images)
 
-            # compute gradient and do SGD step
-            optimizer.zero_grad()
-            loss.backward()
-            updateScore(model)
-            optimizer.step()
+        loss = criterion(output, target)
+        # measure accuracy and record loss
+        acc1, acc5 = accuracy(output, target, topk=(1, 5))
+        # torch.Size([128, 3, 32, 32])
+        # 128
+        losses.update(loss.item(), images.size(0))
+        top1.update(acc1.item(), images.size(0))
+        top5.update(acc5.item(), images.size(0))
 
-            # measure elapsed time
-            batch_time.update(time.time() - end)
-            end = time.time()
+        # compute gradient and do SGD step
+        optimizer.zero_grad()
+        loss.backward()
+        updateScore(model)
+        optimizer.step()
 
-            if i % args.print_freq == 0:
-                t = (num_batches * epoch + i) * batch_size
-                progress.display(i)
-                progress.write_to_tensorboard(writer, prefix="train", global_step=t)
+        # measure elapsed time
+        batch_time.update(time.time() - end)
+        end = time.time()
+
+        if i % args.print_freq == 0:
+            t = (num_batches * epoch + i) * batch_size
+            progress.display(i)
+            progress.write_to_tensorboard(writer, prefix="train", global_step=t)
 
     return top1.avg, top5.avg
 
