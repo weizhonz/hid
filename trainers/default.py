@@ -4,7 +4,7 @@ import tqdm
 
 from utils.eval_utils import accuracy
 from utils.logging import AverageMeter, ProgressMeter
-from utils.net_utils import updateScore
+from utils.net_utils import updateScore, unfreeze_model_weights, freeze_model_weights
 
 __all__ = ["train", "validate", "modifier"]
 
@@ -58,7 +58,7 @@ def train(train_loader, model, criterion, optimizer, epoch, args, writer):
         optimizer.zero_grad()
         loss.backward()
         updateScore(model)
-        # optimizer.step()
+        optimizer.step()
 
         # measure elapsed time
         batch_time.update(time.time() - end)
