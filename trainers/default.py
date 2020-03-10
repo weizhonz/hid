@@ -33,7 +33,9 @@ def train(train_loader, model, criterion, optimizer, epoch, args, writer):
     ):
         if i == 0:
             images_0 = images
+            print (images_0[0])
             target_0 = target
+            print (target_0[0:10])
         # measure data loading time
         data_time.update(time.time() - end)
 
