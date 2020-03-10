@@ -216,6 +216,7 @@ def main_worker(args):
 
 
 
+
 def get_trainer(args):
     print(f"=> Using trainer from trainers.{args.trainer}")
     trainer = importlib.import_module(f"trainers.{args.trainer}")
@@ -323,8 +324,8 @@ def get_model(args):
         )
 
     # freezing the weights if we are only doing subnet training
-    if args.freeze_weights:
-        freeze_model_weights(model)
+    # if args.freeze_weights:
+    #     freeze_model_weights(model)
 
     return model
 
