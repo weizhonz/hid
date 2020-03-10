@@ -109,6 +109,7 @@ def updateScore(model):
             m.scores.grad = m.scores.grad - m.weight.grad.pow(2)*0.1
             m.weight.grad = None
             # print (m.scores.data)
+            # 1
 
 class LabelSmoothing(nn.Module):
     """
