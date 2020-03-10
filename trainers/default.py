@@ -27,35 +27,38 @@ def train(train_loader, model, criterion, optimizer, epoch, args, writer):
     batch_size = train_loader.batch_size
     num_batches = len(train_loader)
     end = time.time()
+    images_0, target_0 = None, None
     for i, (images, target) in tqdm.tqdm(
         enumerate(train_loader), ascii=True, total=len(train_loader)
     ):
+        if i == 0:
+            images_0 = images
+            target_0 = target
         # measure data loading time
         data_time.update(time.time() - end)
 
         if args.gpu is not None:
-            images = images.cuda(args.gpu, non_blocking=True)
+            images_0 = images_0.cuda(args.gpu, non_blocking=True)
 
-        target = target.cuda(args.gpu, non_blocking=True)
+        target_0 = target_0.cuda(args.gpu, non_blocking=True)
 
         # compute output
-        output = model(images)
+        output = model(images_0)
 
-        loss = criterion(output, target)
-
+        loss = criterion(output, target_0)
         # measure accuracy and record loss
-        acc1, acc5 = accuracy(output, target, topk=(1, 5))
+        acc1, acc5 = accuracy(output, target_0, topk=(1, 5))
         # torch.Size([128, 3, 32, 32])
         # 128
-        losses.update(loss.item(), images.size(0))
-        top1.update(acc1.item(), images.size(0))
-        top5.update(acc5.item(), images.size(0))
+        losses.update(loss.item(), images_0.size(0))
+        top1.update(acc1.item(), images_0.size(0))
+        top5.update(acc5.item(), images_0.size(0))
 
         # compute gradient and do SGD step
         optimizer.zero_grad()
         loss.backward()
-        # updateScore(model)
-        optimizer.step()
+        updateScore(model)
+        # optimizer.step()
 
         # measure elapsed time
         batch_time.update(time.time() - end)
