@@ -105,9 +105,9 @@ def updateScore(model):
     for n, m in model.named_modules():
         if hasattr(m, "scores"):
             # print(f"==> assign negative gradient to {n}.scores")
-            print (m.scores.data)
+            # print (m.scores.data)
             m.scores.data = -m.scores.grad
-            print (m.scores.data)
+            # print (m.scores.data)
 
 class LabelSmoothing(nn.Module):
     """
