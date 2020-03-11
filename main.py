@@ -217,6 +217,8 @@ def main_worker(args):
     train_from_scratch = True
     if train_from_scratch:
         args.train1 = False
+        freeze_model_subnet(model)
+        optimizer = get_optimizer(args, optimizer)
         for epoch in range(args.start_epoch, args.epochs):
             lr_policy(epoch, iteration=None)
             modifier(args, epoch, model)
