@@ -103,7 +103,7 @@ def updateScore(model, train1):
     for n, m in model.named_modules():
         if hasattr(m, "scores"):
             if train1:
-                m.scores.grad = m.scores.grad - m.weight.grad.pow(2)*0.1
+                m.scores.grad = m.scores.grad - m.weight.grad.pow(2)*0.01
                 m.weight.grad = None
             else:
                 m.scores.grad = None
