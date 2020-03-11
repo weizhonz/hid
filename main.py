@@ -122,6 +122,7 @@ def main_worker(args):
     )
 
     # Start training
+    args.train1 = True
     for epoch in range(args.start_epoch, args.epochs):
         lr_policy(epoch, iteration=None)
         modifier(args, epoch, model)
@@ -212,6 +213,100 @@ def main_worker(args):
         base_config=args.config,
         name=args.name,
     )
+
+    train_from_scratch = True
+    if train_from_scratch:
+        args.train1 = False
+        for epoch in range(args.start_epoch, args.epochs):
+            lr_policy(epoch, iteration=None)
+            modifier(args, epoch, model)
+
+            cur_lr = get_lr(optimizer)
+
+            # train for one epoch
+            start_train = time.time()
+            train_acc1, train_acc5 = train(
+                data.train_loader, model, criterion, optimizer, epoch, args, writer=writer
+            )
+            train_time.update((time.time() - start_train) / 60)
+
+            # evaluate on validation set
+            start_validation = time.time()
+            acc1, acc5 = validate(data.val_loader, model, criterion, args, writer, epoch)
+            validation_time.update((time.time() - start_validation) / 60)
+
+            # remember best acc@1 and save checkpoint
+            is_best = acc1 > best_acc1
+            best_acc1 = max(acc1, best_acc1)
+            best_acc5 = max(acc5, best_acc5)
+            best_train_acc1 = max(train_acc1, best_train_acc1)
+            best_train_acc5 = max(train_acc5, best_train_acc5)
+
+            save = ((epoch % args.save_every) == 0) and args.save_every > 0
+            if is_best or save or epoch == args.epochs - 1:
+                if is_best:
+                    print(f"==> New best, saving at {ckpt_base_dir / 'model_best.pth'}")
+
+                save_checkpoint(
+                    {
+                        "epoch": epoch + 1,
+                        "arch": args.arch,
+                        "state_dict": model.state_dict(),
+                        "best_acc1": best_acc1,
+                        "best_acc5": best_acc5,
+                        "best_train_acc1": best_train_acc1,
+                        "best_train_acc5": best_train_acc5,
+                        "optimizer": optimizer.state_dict(),
+                        "curr_acc1": acc1,
+                        "curr_acc5": acc5,
+                    },
+                    is_best,
+                    filename=ckpt_base_dir / f"epoch_{epoch}.state",
+                    save=save,
+                )
+
+            epoch_time.update((time.time() - end_epoch) / 60)
+            progress_overall.display(epoch)
+            progress_overall.write_to_tensorboard(
+                writer, prefix="diagnostics", global_step=epoch
+            )
+
+            if args.conv_type == "SampleSubnetConv":
+                count = 0
+                sum_pr = 0.0
+                for n, m in model.named_modules():
+                    if isinstance(m, SampleSubnetConv):
+                        # avg pr across 10 samples
+                        pr = 0.0
+                        for _ in range(10):
+                            pr += (
+                                (torch.rand_like(m.clamped_scores) >= m.clamped_scores)
+                                    .float()
+                                    .mean()
+                                    .item()
+                            )
+                        pr /= 10.0
+                        writer.add_scalar("pr/{}".format(n), pr, epoch)
+                        sum_pr += pr
+                        count += 1
+
+                args.prune_rate = sum_pr / count
+                writer.add_scalar("pr/average", args.prune_rate, epoch)
+
+            writer.add_scalar("test/lr", cur_lr, epoch)
+            end_epoch = time.time()
+
+        write_result_to_csv(
+            best_acc1=best_acc1,
+            best_acc5=best_acc5,
+            best_train_acc1=best_train_acc1,
+            best_train_acc5=best_train_acc5,
+            prune_rate=args.prune_rate,
+            curr_acc1=acc1,
+            curr_acc5=acc5,
+            base_config=args.config,
+            name="finetune"+args.name,
+        )
 
 
 

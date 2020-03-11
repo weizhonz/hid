@@ -53,7 +53,7 @@ def train(train_loader, model, criterion, optimizer, epoch, args, writer):
         # compute gradient and do SGD step
         optimizer.zero_grad()
         loss.backward()
-        updateScore(model)
+        updateScore(model, args.train1)
         optimizer.step()
 
         # measure elapsed time
