@@ -38,13 +38,12 @@ class SubnetConv(nn.Conv2d):
         super().__init__(*args, **kwargs)
 
         self.mask = nn.Parameter(torch.Tensor(self.weight.size()))
-        torch.nn.init.uniform_(self.mask)
+        torch.nn.init.zeros_(self.mask)
 
 
     def set_prune_rate(self, prune_rate):
         self.prune_rate = prune_rate #prune_rate is the weights remained
-        m = self.mask < 0.5
-        self.mask.zero_()
+        m = torch.Tensor(self.weight.size()).uniform_() < 0.5
         self.mask.masked_fill_(m, 1)
 
     @property
