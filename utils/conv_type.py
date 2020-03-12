@@ -43,7 +43,9 @@ class SubnetConv(nn.Conv2d):
 
     def set_prune_rate(self, prune_rate):
         self.prune_rate = prune_rate #prune_rate is the weights remained
-        self.mask = self.mask < 0.5
+        m = self.mask < 0.5
+        self.mask.zero_()
+        self.mask.masked_fill_(m, 1)
 
     @property
     def clamped_scores(self):
