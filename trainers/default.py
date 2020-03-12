@@ -54,7 +54,7 @@ def train(train_loader, model, criterion, optimizer, epoch, args, writer):
         optimizer.zero_grad()
         loss.backward()
         updateScore(model, args.train1)
-        optimizer.step()
+        # optimizer.step()
 
         # measure elapsed time
         batch_time.update(time.time() - end)
