@@ -103,23 +103,24 @@ def updateScore(model, train1):
     for n, m in model.named_modules():
         if hasattr(m, "scores"):
             if train1:
-                K = 3
-                mask1 = m.mask.flatten()
-                mask2 = torch.ne(mask1, True)
-                x = -m.scores.grad + m.weight.grad.pow(2)*0.01
-                x = x.flatten()
-                x1 = torch.masked_select(x, mask1)
-                x2 = torch.masked_select(x, mask2)
-                topk_min, idx1 = torch.topk(x1, K, largest=False)
-                topk_max, idx2 = torch.topk(x2, K)
-                index_nonzero = torch.nonzero(mask1)
-                index_zero = torch.nonzero(mask2)
-                for i in range(K):
-                    if topk_max[i]-topk_min[i] > 0:
-                        mask1[index_nonzero[idx1[0]]] = False
-                        mask1[index_zero[idx2[0]]] = True
+                with torch.no_grad():
+                    K = 3
+                    mask1 = m.mask.flatten()
+                    mask2 = torch.ne(mask1, True)
+                    x = -m.mask.grad + m.weight.grad.pow(2)*0.01
+                    x = x.flatten()
+                    x1 = torch.masked_select(x, mask1)
+                    x2 = torch.masked_select(x, mask2)
+                    topk_min, idx1 = torch.topk(x1, K, largest=False)
+                    topk_max, idx2 = torch.topk(x2, K)
+                    index_nonzero = torch.nonzero(mask1)
+                    index_zero = torch.nonzero(mask2)
+                    for i in range(K):
+                        if topk_max[i]-topk_min[i] > 0:
+                            mask1[index_nonzero[idx1[0]]] = False
+                            mask1[index_zero[idx2[0]]] = True
 
-                m.weight.grad = None
+                    m.weight.grad = None
 
 
 class LabelSmoothing(nn.Module):
