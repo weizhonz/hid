@@ -37,19 +37,20 @@ class SubnetConv(nn.Conv2d):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.scores = nn.Parameter(torch.Tensor(self.weight.size()))
-        nn.init.kaiming_uniform_(self.scores, a=math.sqrt(5))
+        self.mask = nn.Parameter(torch.Tensor(self.weight.size()))
+        torch.nn.init.uniform_(self.mask)
+
 
     def set_prune_rate(self, prune_rate):
         self.prune_rate = prune_rate #prune_rate is the weights remained
+        self.mask = self.mask < 0.5
 
     @property
     def clamped_scores(self):
         return self.scores.abs()
 
     def forward(self, x):
-        subnet = GetSubnet.apply(self.scores, self.prune_rate)
-        w = self.weight * subnet
+        w = self.weight * self.mask
         x = F.conv2d(
             x, w, self.bias, self.stride, self.padding, self.dilation, self.groups
         )
