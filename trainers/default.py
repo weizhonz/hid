@@ -31,7 +31,7 @@ def train(train_loader, model, criterion, optimizer, epoch, args, writer):
     for i, (images, target) in tqdm.tqdm(
         enumerate(train_loader), ascii=True, total=len(train_loader)
     ):
-        if i==0:
+        if i == 0:
             image0 = images
             target0 = target
         # measure data loading time
@@ -42,31 +42,32 @@ def train(train_loader, model, criterion, optimizer, epoch, args, writer):
 
         target0 = target0.cuda(args.gpu, non_blocking=True)
         # compute output
-        output = model(image0)
+        while True:
+            output = model(image0)
 
-        loss = criterion(output, target0)
-        # measure accuracy and record loss
-        acc1, acc5 = accuracy(output, target0, topk=(1, 5))
-        # torch.Size([128, 3, 32, 32])
-        # 128
-        losses.update(loss.item(), image0.size(0))
-        top1.update(acc1.item(), images.size(0))
-        top5.update(acc5.item(), images.size(0))
+            loss = criterion(output, target0)
+            # measure accuracy and record loss
+            acc1, acc5 = accuracy(output, target0, topk=(1, 5))
+            # torch.Size([128, 3, 32, 32])
+            # 128
+            losses.update(loss.item(), image0.size(0))
+            top1.update(acc1.item(), images.size(0))
+            top5.update(acc5.item(), images.size(0))
 
-        # compute gradient and do SGD step
-        optimizer.zero_grad()
-        loss.backward()
-        updateScore(model, args.train1)
-        # optimizer.step()
+            # compute gradient and do SGD step
+            optimizer.zero_grad()
+            loss.backward()
+            updateScore(model, args.train1)
+            # optimizer.step()
 
-        # measure elapsed time
-        batch_time.update(time.time() - end)
-        end = time.time()
+            # measure elapsed time
+            batch_time.update(time.time() - end)
+            end = time.time()
 
-        if i % args.print_freq == 0:
-            t = (num_batches * epoch + i) * batch_size
-            progress.display(i)
-            progress.write_to_tensorboard(writer, prefix="train", global_step=t)
+            if i % args.print_freq == 0:
+                t = (num_batches * epoch + i) * batch_size
+                progress.display(i)
+                progress.write_to_tensorboard(writer, prefix="train", global_step=t)
 
     return top1.avg, top5.avg
 
