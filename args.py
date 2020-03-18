@@ -215,6 +215,13 @@ def parse_arguments():
         help="Sample Baseline Subnet Init",
     )
 
+    parser.add_argument(
+        "--K",
+        type=int,
+        default=10,
+        help="Exchange K weights",
+    )
+
     args = parser.parse_args()
 
     # Allow for use from notebook without config file
