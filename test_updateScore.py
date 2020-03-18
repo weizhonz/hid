@@ -18,17 +18,18 @@ def updateScore(mask):
         index_zero = torch.nonzero(mask2)
         for i in range(K):
             if topk_max[i] - topk_min[i] > 0:
+                print(i)
                 mask_flatten[index_nonzero[idx1[i]]] = False
                 mask_flatten[index_zero[idx2[i]]] = True
 
 torch.manual_seed(1)
-mask = nn.Parameter(torch.Tensor(2,3))
+mask = nn.Parameter(torch.Tensor(2,4))
 torch.nn.init.zeros_(mask)
-mask.grad = torch.tensor(np.array([[1., 2., 3.], [4., 5., 6.]]), dtype=torch.float32)
+mask.grad = torch.tensor(np.array([[1., 2., 3., 4], [5., 6., 7., 8]]), dtype=torch.float32)
 
 
 with torch.no_grad():
-    m = torch.Tensor(2,3).uniform_()
+    m = torch.Tensor(2,4).uniform_()
     m = m < 0.5
     mask.masked_fill_(m, 1)
 updateScore(mask)
