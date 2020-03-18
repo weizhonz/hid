@@ -31,9 +31,9 @@ def train(train_loader, model, criterion, optimizer, epoch, args, writer):
     for i, (images, target) in tqdm.tqdm(
         enumerate(train_loader), ascii=True, total=len(train_loader)
     ):
-
-        image0 = images
-        target0 = target
+        if i==0:
+            image0 = images
+            target0 = target
         # measure data loading time
         data_time.update(time.time() - end)
 
