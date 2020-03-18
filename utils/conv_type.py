@@ -45,7 +45,7 @@ class SubnetConv(nn.Conv2d):
     def set_prune_rate(self, prune_rate):
         self.prune_rate = prune_rate #prune_rate is the weights remained
         with torch.no_grad():
-            m = torch.Tensor(self.weight.size()).uniform_() < 0.5
+            m = torch.Tensor(self.weight.size()).uniform_() < self.prune_rate
             self.mask.masked_fill_(m, 1)
 
     @property
