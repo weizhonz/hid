@@ -104,7 +104,7 @@ def updateScore(model, train1):
         if hasattr(m, "mask"):
             if train1:
                 with torch.no_grad():
-                    K = 1
+                    K = 10
                     mask_flatten = m.mask.flatten()
                     mask1 = torch.eq(mask_flatten, 1)
                     mask2 = torch.ne(mask1, True)
