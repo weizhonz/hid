@@ -122,9 +122,6 @@ def updateScore(model, train1):
                             mask_flatten[index_nonzero[idx1[0]]] = False
                             mask_flatten[index_zero[idx2[0]]] = True
 
-                    m.weight.grad = None
-
-
 class LabelSmoothing(nn.Module):
     """
     NLL loss with label smoothing.
