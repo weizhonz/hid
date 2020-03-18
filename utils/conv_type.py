@@ -36,7 +36,8 @@ class GetSubnet(autograd.Function):
 class SubnetConv(nn.Conv2d):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.weight = self.weight*0.01
+
+        self.weight.data = torch.mul(self.weight.data, 0.01)
         self.mask = nn.Parameter(torch.Tensor(self.weight.size()))
         torch.nn.init.zeros_(self.mask)
 
