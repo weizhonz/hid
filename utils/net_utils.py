@@ -101,8 +101,9 @@ def accumulate(model, f):
 
 def updateScore(model, train1):
     for n, m in model.named_modules():
-        if hasattr(m, "scores"):
+        if hasattr(m, "mask"):
             if train1:
+                print(train1)
                 with torch.no_grad():
                     K = 100
                     mask1 = m.mask.flatten()
