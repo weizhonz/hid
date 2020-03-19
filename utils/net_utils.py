@@ -125,6 +125,7 @@ def updateScore(model, args):
                 for i in range(K):
                     print(i, topk_max[i] - topk_min[i])
                     if topk_max[i]-topk_min[i] > args.D:
+                        print ("exchange i")
                         mask_flatten[index_nonzero[idx1[i]]] = False
                         mask_flatten[index_zero[idx2[i]]] = True
 
