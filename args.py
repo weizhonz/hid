@@ -222,6 +222,13 @@ def parse_arguments():
         help="Exchange K weights",
     )
 
+    parser.add_argument(
+        "--D",
+        type=float,
+        default=0.005,
+        help="Min difference",
+    )
+
     args = parser.parse_args()
 
     # Allow for use from notebook without config file
