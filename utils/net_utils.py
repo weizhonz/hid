@@ -123,7 +123,7 @@ def updateScore(model, args):
                 index_nonzero = torch.nonzero(mask1)
                 index_zero = torch.nonzero(mask2)
                 for i in range(K):
-                    if topk_max[i]-topk_min[i] > 0:
+                    if topk_max[i]-topk_min[i] > 0.1:
                         print(i, topk_max[i]-topk_min[i])
                         mask_flatten[index_nonzero[idx1[i]]] = False
                         mask_flatten[index_zero[idx2[i]]] = True
