@@ -103,6 +103,11 @@ def updateScore(model, args):
     for n, m in model.named_modules():
         if hasattr(m, "mask"):
             with torch.no_grad():
+                print(
+                    f"=> Rough estimate model params {sum(int(p.numel() * m.prune_rate) for n, p in m.named_parameters() if not n.endswith('mask'))}"
+                )
+                for n, p in m.named_parameters():
+                    print(n, p.size(), p.numel())
                 K = args.K
                 mask_flatten = m.mask.flatten()
                 mask1 = torch.eq(mask_flatten, 1)
