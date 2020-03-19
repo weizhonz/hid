@@ -217,8 +217,8 @@ def parse_arguments():
 
     parser.add_argument(
         "--K",
-        type=int,
-        default=10,
+        type=float,
+        default=0.01,
         help="Exchange K weights",
     )
 
