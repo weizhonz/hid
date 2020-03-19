@@ -108,7 +108,7 @@ def updateScore(model, args):
                 )
                 for n, p in m.named_parameters():
                     print(n, p.size(), p.numel())
-                K = min(int(args.K * m.prune_rate * m.mask.numel()), 50)
+                K = min(int(args.K * m.prune_rate * m.mask.numel()), 30)
                 print(K)
                 mask_flatten = m.mask.flatten()
                 mask1 = torch.eq(mask_flatten, 1)
@@ -124,6 +124,7 @@ def updateScore(model, args):
                 index_zero = torch.nonzero(mask2)
                 for i in range(K):
                     if topk_max[i]-topk_min[i] > 0:
+                        print(i, topk_max[i]-topk_min[i])
                         mask_flatten[index_nonzero[idx1[i]]] = False
                         mask_flatten[index_zero[idx2[i]]] = True
 
