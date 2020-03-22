@@ -19,14 +19,11 @@ class Conv2(nn.Module):
         )
 
         self.linear = nn.Sequential(
-            # builder.conv1x1(64 * 16 * 16, 256),
-            builder.conv1x1(64 * 16 * 16, 64),
+            builder.conv1x1(64 * 16 * 16, 256),
             nn.ReLU(),
-            # builder.conv1x1(256, 256),
-            builder.conv1x1(64, 64),
+            builder.conv1x1(256, 256),
             nn.ReLU(),
-            # builder.conv1x1(256, 10),
-            builder.conv1x1(64, 10),
+            builder.conv1x1(256, 10),
         )
 
     def forward(self, x):
