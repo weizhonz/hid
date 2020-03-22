@@ -103,12 +103,12 @@ def updateScore(model, args):
     for n, m in model.named_modules():
         if hasattr(m, "mask"):
             with torch.no_grad():
-                print(
-                    f"=> Rough estimate model params {sum(int(p.numel() * m.prune_rate) for n, p in m.named_parameters() if not n.endswith('mask'))}"
-                )
-                for n, p in m.named_parameters():
-                    print(n, p.size(), p.numel())
-                K = min(int(args.K * m.prune_rate * m.mask.numel()), 300)
+                # print(
+                #     f"=> Rough estimate model params {sum(int(p.numel() * m.prune_rate) for n, p in m.named_parameters() if not n.endswith('mask'))}"
+                # )
+                # for n, p in m.named_parameters():
+                #     print(n, p.size(), p.numel())
+                K = 10
                 print(K)
                 mask_flatten = m.mask.flatten()
                 mask1 = torch.eq(mask_flatten, 1)
@@ -124,10 +124,8 @@ def updateScore(model, args):
                 index_zero = torch.nonzero(mask2)
                 for i in range(K):
                     print(i, topk_max[i] - topk_min[i])
-                    if topk_max[i]-topk_min[i] > args.D:
-                        print ("exchange i")
-                        mask_flatten[index_nonzero[idx1[i]]] = False
-                        mask_flatten[index_zero[idx2[i]]] = True
+                    mask_flatten[index_nonzero[idx1[i]]] = False
+                    mask_flatten[index_zero[idx2[i]]] = True
 
 class LabelSmoothing(nn.Module):
     """
