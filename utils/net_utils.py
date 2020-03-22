@@ -108,7 +108,7 @@ def updateScore(model, args):
                 # )
                 # for n, p in m.named_parameters():
                 #     print(n, p.size(), p.numel())
-                K = 10
+                K = int(args.K)
                 # print(K)
                 mask_flatten = m.mask.flatten()
                 mask1 = torch.eq(mask_flatten, 1)
