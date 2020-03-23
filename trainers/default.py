@@ -90,7 +90,7 @@ def train(train_loader, model, criterion, optimizer, epoch, args, writer):
                     updateScore(model, args, m_change)
                     output = model(image0)
                     loss4 = criterion(output, target0)
-                    print("%d %.3f %.3f %.3f" % (K, loss.item(), loss2.item(), loss4.item()))
+                    print("%d %d %.3f %.3f %.3f" % (m_change, K, loss.item(), loss2.item(), loss4.item()))
                     break
             # optimizer.step()
 
