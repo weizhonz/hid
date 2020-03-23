@@ -83,7 +83,7 @@ def train(train_loader, model, criterion, optimizer, epoch, args, writer):
                 print("%d %.3f %.3f %.3f" % (K, loss.item(), loss2.item(), loss3.item()))
 
                 if K == 1:
-                    updateScore(model, args, 10)
+                    updateScore(model, args, 50)
                     output = model(image0)
                     loss4 = criterion(output, target0)
                     print("%d %.3f %.3f %.3f %.3f" % (K, loss.item(), loss2.item(), loss3.item(), loss4.item()))
