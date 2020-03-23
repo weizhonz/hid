@@ -74,7 +74,7 @@ def train(train_loader, model, criterion, optimizer, epoch, args, writer):
                 with torch.no_grad():
                     for n, m in model.named_modules():
                         if hasattr(m, "mask"):
-                            m.mask.data = l[n]
+                            m.mask.data.copy_(l[n])
                 output = model(image0)
                 loss3 = criterion(output, target0)
                 print (loss, loss2, loss3)
