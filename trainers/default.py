@@ -42,7 +42,11 @@ def train(train_loader, model, criterion, optimizer, epoch, args, writer):
 
         target0 = target0.cuda(args.gpu, non_blocking=True)
         # compute output
+        m_change = 50
+        idx = 0
         while True:
+            idx += 1
+            m_change = 40*((1000-idx) / 1000) + 10
             output = model(image0)
 
             loss = criterion(output, target0)
@@ -77,16 +81,16 @@ def train(train_loader, model, criterion, optimizer, epoch, args, writer):
                         if hasattr(m, "mask"):
                             m.mask.data.copy_(l[n])
 
-                output = model(image0)
-                loss3 = criterion(output, target0)
+                # output = model(image0)
+                # loss3 = criterion(output, target0)
 
-                print("%d %.3f %.3f %.3f" % (K, loss.item(), loss2.item(), loss3.item()))
+                print("%d %.3f %.3f" % (K, loss.item(), loss2.item()))
 
                 if K == 1:
-                    updateScore(model, args, 50)
+                    updateScore(model, args, m_change)
                     output = model(image0)
                     loss4 = criterion(output, target0)
-                    print("%d %.3f %.3f %.3f %.3f" % (K, loss.item(), loss2.item(), loss3.item(), loss4.item()))
+                    print("%d %.3f %.3f %.3f" % (K, loss.item(), loss2.item(), loss4.item()))
                     break
             # optimizer.step()
 
