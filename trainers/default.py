@@ -57,7 +57,27 @@ def train(train_loader, model, criterion, optimizer, epoch, args, writer):
             # compute gradient and do SGD step
             optimizer.zero_grad()
             loss.backward()
-            updateScore(model, args)
+            K = 100
+            l = {}
+            with torch.no_grad():
+                for n, m in model.named_modules():
+                    if hasattr(m, "mask"):
+                        l[n] = m.mask.clone()
+
+            while True:
+                updateScore(model, args, K)
+                output = model(image0)
+                loss2 = criterion(output, target0)
+                if loss2 < loss:
+                    break
+                K *= 0.7
+                with torch.no_grad():
+                    for n, m in model.named_modules():
+                        if hasattr(m, "mask"):
+                            m.mask = l[n]
+                output = model(image0)
+                loss3 = criterion(output, target0)
+                print (loss, loss2, loss3)
             # optimizer.step()
 
             # measure elapsed time
