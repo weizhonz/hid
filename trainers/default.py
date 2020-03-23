@@ -69,7 +69,7 @@ def train(train_loader, model, criterion, optimizer, epoch, args, writer):
                 output = model(image0)
                 loss2 = criterion(output, target0)
                 if (loss2 < loss or K == 1):
-                    print("%d %.3f %.3f %.3f" % (K, loss.item(), loss2.item()))
+                    print("%d %.3f %.3f" % (K, loss.item(), loss2.item()))
                     break
                 K = int(K*0.7)
                 with torch.no_grad():
