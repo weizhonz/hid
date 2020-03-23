@@ -78,7 +78,7 @@ def train(train_loader, model, criterion, optimizer, epoch, args, writer):
                             m.mask.data.copy_(l[n])
                 output = model(image0)
                 loss3 = criterion(output, target0)
-                print (K, loss.item(), loss2.item(), loss3.item())
+                print("%d %.3f %.3f %.3f" % K, loss.item(), loss2.item(), loss3.item())
             # optimizer.step()
 
             # measure elapsed time
