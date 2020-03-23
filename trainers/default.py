@@ -70,7 +70,7 @@ def train(train_loader, model, criterion, optimizer, epoch, args, writer):
                 loss2 = criterion(output, target0)
                 if loss2 < loss:
                     break
-                K *= 0.7
+                K = int(K*0.7)
                 with torch.no_grad():
                     for n, m in model.named_modules():
                         if hasattr(m, "mask"):
