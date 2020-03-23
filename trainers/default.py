@@ -64,11 +64,12 @@ def train(train_loader, model, criterion, optimizer, epoch, args, writer):
                     if hasattr(m, "mask"):
                         l[n] = m.mask.data.clone()
 
-            while True:
+            while K > 0:
                 updateScore(model, args, K)
                 output = model(image0)
                 loss2 = criterion(output, target0)
                 if loss2 < loss:
+                    print(loss.item(), loss2.item())
                     break
                 K = int(K*0.7)
                 with torch.no_grad():
@@ -77,7 +78,7 @@ def train(train_loader, model, criterion, optimizer, epoch, args, writer):
                             m.mask.data.copy_(l[n])
                 output = model(image0)
                 loss3 = criterion(output, target0)
-                print (loss, loss2, loss3)
+                print (loss.item(), loss2.item(), loss3.item())
             # optimizer.step()
 
             # measure elapsed time
