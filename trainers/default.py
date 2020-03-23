@@ -46,7 +46,7 @@ def train(train_loader, model, criterion, optimizer, epoch, args, writer):
         idx = 0
         while True:
             idx += 1
-            m_change = 40*((1000-idx) / 1000) + 10
+            m_change = int(40*((1000-idx) / 1000) + 10)
             output = model(image0)
 
             loss = criterion(output, target0)
