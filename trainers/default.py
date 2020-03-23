@@ -64,11 +64,11 @@ def train(train_loader, model, criterion, optimizer, epoch, args, writer):
                     if hasattr(m, "mask"):
                         l[n] = m.mask.data.clone()
 
-            while K > 0:
+            while True:
                 updateScore(model, args, K)
                 output = model(image0)
                 loss2 = criterion(output, target0)
-                if (loss2 < loss or K == 1):
+                if loss2 < loss:
                     print("%d %.3f %.3f" % (K, loss.item(), loss2.item()))
                     break
                 K = int(K*0.7)
@@ -76,9 +76,18 @@ def train(train_loader, model, criterion, optimizer, epoch, args, writer):
                     for n, m in model.named_modules():
                         if hasattr(m, "mask"):
                             m.mask.data.copy_(l[n])
+
                 output = model(image0)
                 loss3 = criterion(output, target0)
+
                 print("%d %.3f %.3f %.3f" % (K, loss.item(), loss2.item(), loss3.item()))
+
+                if K == 1:
+                    updateScore(model, args, 50)
+                    output = model(image0)
+                    loss4 = criterion(output, target0)
+                    print("%d %.3f %.3f %.3f %.3f" % (K, loss.item(), loss2.item(), loss3.item(), loss4.item()))
+                    break
             # optimizer.step()
 
             # measure elapsed time
