@@ -31,9 +31,9 @@ def train(train_loader, model, criterion, optimizer, epoch, args, writer):
     for i, (images, target) in tqdm.tqdm(
         enumerate(train_loader), ascii=True, total=len(train_loader)
     ):
-        if i == 0:
-            image0 = images
-            target0 = target
+        # if i == 0:
+        image0 = images
+        target0 = target
         # measure data loading time
         data_time.update(time.time() - end)
 
@@ -43,67 +43,67 @@ def train(train_loader, model, criterion, optimizer, epoch, args, writer):
         target0 = target0.cuda(args.gpu, non_blocking=True)
         # compute output
         m_change = 50
-        idx = 0
-        while True:
-            print(idx)
-            idx += 1
+        # idx = 0
+        # while True:
+        #     print(idx)
+        #     idx += 1
             #m_change = int(40*((1000-idx) / 1000) + 10)
-            m_change = 10
+        m_change = int(args.K)
+        output = model(image0)
+
+        loss = criterion(output, target0)
+        # measure accuracy and record loss
+        acc1, acc5 = accuracy(output, target0, topk=(1, 5))
+        # torch.Size([128, 3, 32, 32])
+        # 128
+        losses.update(loss.item(), image0.size(0))
+        top1.update(acc1.item(), images.size(0))
+        top5.update(acc5.item(), images.size(0))
+
+        # compute gradient and do SGD step
+        optimizer.zero_grad()
+        loss.backward()
+        K = 100
+        l = {}
+        with torch.no_grad():
+            for n, m in model.named_modules():
+                if hasattr(m, "mask"):
+                    l[n] = m.mask.data.clone()
+
+        while True:
+            updateScore(model, args, K)
             output = model(image0)
-
-            loss = criterion(output, target0)
-            # measure accuracy and record loss
-            acc1, acc5 = accuracy(output, target0, topk=(1, 5))
-            # torch.Size([128, 3, 32, 32])
-            # 128
-            losses.update(loss.item(), image0.size(0))
-            top1.update(acc1.item(), images.size(0))
-            top5.update(acc5.item(), images.size(0))
-
-            # compute gradient and do SGD step
-            optimizer.zero_grad()
-            loss.backward()
-            K = 100
-            l = {}
+            loss2 = criterion(output, target0)
+            if loss2 < loss:
+                print("%d %.3f %.3f" % (K, loss.item(), loss2.item()))
+                break
+            K = int(K*0.7)
             with torch.no_grad():
                 for n, m in model.named_modules():
                     if hasattr(m, "mask"):
-                        l[n] = m.mask.data.clone()
+                        m.mask.data.copy_(l[n])
 
-            while True:
-                updateScore(model, args, K)
+            # output = model(image0)
+            # loss3 = criterion(output, target0)
+
+            print("%d %.3f %.3f" % (K, loss.item(), loss2.item()))
+
+            if K == 1:
+                updateScore(model, args, m_change)
                 output = model(image0)
-                loss2 = criterion(output, target0)
-                if loss2 < loss:
-                    print("%d %.3f %.3f" % (K, loss.item(), loss2.item()))
-                    break
-                K = int(K*0.7)
-                with torch.no_grad():
-                    for n, m in model.named_modules():
-                        if hasattr(m, "mask"):
-                            m.mask.data.copy_(l[n])
+                loss4 = criterion(output, target0)
+                print("%d %d %.3f %.3f %.3f" % (m_change, K, loss.item(), loss2.item(), loss4.item()))
+                break
+        # optimizer.step()
 
-                # output = model(image0)
-                # loss3 = criterion(output, target0)
+        # measure elapsed time
+        batch_time.update(time.time() - end)
+        end = time.time()
 
-                print("%d %.3f %.3f" % (K, loss.item(), loss2.item()))
-
-                if K == 1:
-                    updateScore(model, args, m_change)
-                    output = model(image0)
-                    loss4 = criterion(output, target0)
-                    print("%d %d %.3f %.3f %.3f" % (m_change, K, loss.item(), loss2.item(), loss4.item()))
-                    break
-            # optimizer.step()
-
-            # measure elapsed time
-            batch_time.update(time.time() - end)
-            end = time.time()
-
-            if i % args.print_freq == 0:
-                t = (num_batches * epoch + i) * batch_size
-                progress.display(i)
-                progress.write_to_tensorboard(writer, prefix="train", global_step=t)
+        if i % args.print_freq == 0:
+            t = (num_batches * epoch + i) * batch_size
+            progress.display(i)
+            progress.write_to_tensorboard(writer, prefix="train", global_step=t)
 
     return top1.avg, top5.avg
 
