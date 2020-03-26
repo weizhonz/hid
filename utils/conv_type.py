@@ -83,7 +83,7 @@ class ContinuousSubnetConv(nn.Conv2d):
         g0 = torch.from_numpy(np.random.gumbel(size=self.scores.size()))
         print (type(g0))
         g1 = torch.from_numpy(np.random.gumbel(size=self.scores.size()))
-        print (type(self.scores))
+        print (type(self.scores.data))
         subnet = torch.sigmoid(self.scores + g1 - g0)
         print(type(subnet))
         w = self.weight * subnet

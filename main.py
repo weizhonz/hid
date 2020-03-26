@@ -327,6 +327,7 @@ def set_gpu(args, model):
     assert torch.cuda.is_available(), "CPU-only experiments currently unsupported"
 
     if args.gpu is not None:
+        torch.set_default_tensor_type('torch.cuda.FloatTensor')
         torch.cuda.set_device(args.gpu)
         model = model.cuda(args.gpu)
     elif args.multigpu is None:
