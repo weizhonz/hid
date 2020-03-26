@@ -333,7 +333,7 @@ def set_gpu(args, model):
         device = torch.device("cpu")
     else:
         # DataParallel will divide and allocate batch_size to all available GPUs
-        torch.set_default_tensor_type('torch.cuda.FloatTensor')
+        # torch.set_default_tensor_type('torch.cuda.FloatTensor')
         print(f"=> Parallelizing on {args.multigpu} gpus")
         torch.cuda.set_device(args.multigpu[0])
         args.gpu = args.multigpu[0]

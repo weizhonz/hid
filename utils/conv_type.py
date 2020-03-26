@@ -80,9 +80,9 @@ class ContinuousSubnetConv(nn.Conv2d):
 
     def forward(self, x):
         print(self.scores.size())
-        g0 = torch.from_numpy(np.random.gumbel(size=self.scores.size()))
+        g0 = torch.from_numpy(np.random.gumbel(size=self.scores.size())).cuda()
         print (type(g0))
-        g1 = torch.from_numpy(np.random.gumbel(size=self.scores.size()))
+        g1 = torch.from_numpy(np.random.gumbel(size=self.scores.size())).cuda()
         print (type(self.scores.data))
         subnet = torch.sigmoid(self.scores + g1 - g0)
         print(type(subnet))
