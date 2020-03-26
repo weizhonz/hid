@@ -123,11 +123,11 @@ def updateScoreDiff(model, loss):
     for n, m in model.named_modules():
         if hasattr(m, "scores"):
             with torch.no_grad():
-                print("update score")
-                print("loss", loss)
-                print("m.scores", m.scores)
+                # print("update score")
+                # print("loss", loss)
+                # print("m.scores", m.scores)
                 m.scores.grad = loss*m.scores.grad
-                print("m.scores.grad", m.scores.grad)
+                # print("m.scores.grad", m.scores.grad)
 
 class LabelSmoothing(nn.Module):
     """

@@ -117,10 +117,10 @@ class SFESubnetConv(nn.Conv2d):
         noise = -torch.log(torch.log(uniform0 + eps) / torch.log(uniform1 + eps) + eps)
 
         subnet = (self.scores + noise > 0).float()
-        print("subnet", subnet)
+        # print("subnet", subnet)
         self.scores.grad = subnet - torch.sigmoid(self.scores)
-        print("sigmoid(scores)", torch.sigmoid(self.scores))
-        print("scores.grad", self.scores.grad)
+        # print("sigmoid(scores)", torch.sigmoid(self.scores))
+        # print("scores.grad", self.scores.grad)
         w = self.weight * subnet
         x = F.conv2d(
             x, w, self.bias, self.stride, self.padding, self.dilation, self.groups
