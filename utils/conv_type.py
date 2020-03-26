@@ -78,9 +78,14 @@ class ContinuousSubnetConv(nn.Conv2d):
             nn.init.kaiming_uniform_(self.scores, a=math.sqrt(5))
 
     def forward(self, x):
-        g0 = torch.as_tensor(np.random.gumbel(size=self.scores.size()), dtype=torch.float, device=torch.device('cuda'))
-        g1 = torch.as_tensor(np.random.gumbel(size=self.scores.size()), dtype=torch.float, device=torch.device('cuda'))
-        subnet = torch.sigmoid((self.scores + g1 - g0)/0.1)
+        eps = 1e-20
+        temp = 0.1
+        uniform0 = torch.rand_like(self.scores)
+        uniform1 = torch.rand_like(self.scores)
+        noise = -torch.log(torch.log(uniform0 + eps) / torch.log(uniform1 + eps) + eps)
+        # g0 = torch.as_tensor(np.random.gumbel(size=self.scores.size()), dtype=torch.float, device=torch.device('cuda'))
+        # g1 = torch.as_tensor(np.random.gumbel(size=self.scores.size()), dtype=torch.float, device=torch.device('cuda'))
+        subnet = torch.sigmoid((self.scores + noise)/temp)
         w = self.weight * subnet
         x = F.conv2d(
             x, w, self.bias, self.stride, self.padding, self.dilation, self.groups
