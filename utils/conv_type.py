@@ -79,8 +79,9 @@ class ContinuousSubnetConv(nn.Conv2d):
             nn.init.kaiming_uniform_(self.scores, a=math.sqrt(5))
 
     def forward(self, x):
-        g0 = np.random.gumbel(size=self.scores)
-        g1 = np.random.gumbel(size=self.scores)
+        print(self.scores.size())
+        g0 = np.random.gumbel(size=self.scores.size())
+        g1 = np.random.gumbel(size=self.scores.size())
         subnet = torch.sigmoid(self.scores + g1 - g0)
         w = self.weight * subnet
         x = F.conv2d(
