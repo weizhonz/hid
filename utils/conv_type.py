@@ -80,13 +80,13 @@ class ContinuousSubnetConv(nn.Conv2d):
 
     def forward(self, x):
         print(self.scores.size())
-        g0 = torch.as_tensor(np.random.gumbel(size=self.scores.size()), dtype=torch.double, device='cuda')
-        print (type(g0))
+        g0 = torch.as_tensor(np.random.gumbel(size=self.scores.size()), dtype=torch.double, device=torch.device('cuda'))
+        print (g0.type())
         print(g0.device)
-        g1 = torch.as_tensor(np.random.gumbel(size=self.scores.size()), dtype=torch.double).cuda()
-        print (type(self.scores.data))
+        g1 = torch.as_tensor(np.random.gumbel(size=self.scores.size()), dtype=torch.double, device=torch.device('cuda'))
+        print (self.scores.data.type())
         subnet = torch.sigmoid(self.scores + g1 - g0)
-        print(type(subnet))
+        print(subnet.type())
         w = self.weight * subnet
         x = F.conv2d(
             x, w, self.bias, self.stride, self.padding, self.dilation, self.groups
