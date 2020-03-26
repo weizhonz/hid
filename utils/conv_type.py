@@ -88,6 +88,7 @@ class ContinuousSubnetConv(nn.Conv2d):
         subnet = torch.sigmoid(self.scores + g1 - g0)
         print(subnet.type())
         w = self.weight * subnet
+        print(x.type())
         x = F.conv2d(
             x, w, self.bias, self.stride, self.padding, self.dilation, self.groups
         )
