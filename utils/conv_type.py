@@ -89,6 +89,7 @@ class ContinuousSubnetConv(nn.Conv2d):
         print(subnet.type())
         w = self.weight * subnet
         print(x.type())
+        print(self.weight.type())
         x = F.conv2d(
             x, w, self.bias, self.stride, self.padding, self.dilation, self.groups
         )
