@@ -127,6 +127,7 @@ def updateScoreDiff(model, loss):
                 print("loss", loss)
                 print("m.scores", m.scores)
                 m.scores.grad = loss*m.scores.grad
+                print("m.scores.grad", m.scores.grad)
 
 class LabelSmoothing(nn.Module):
     """
