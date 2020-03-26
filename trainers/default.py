@@ -54,8 +54,10 @@ def train(train_loader, model, criterion, optimizer, epoch, args, writer):
 
         # compute gradient and do SGD step
         # optimizer.zero_grad()
-        # loss.backward()
-        updateScoreDiff(model, loss)
+        if args.conv_type != "SFESubnetConv":
+            loss.backward()
+        else:
+            updateScoreDiff(model, loss)
         optimizer.step()
 
         # measure elapsed time
