@@ -1,3 +1,4 @@
+import numpy as np
 import torch
 import torch.autograd as autograd
 import torch.nn as nn
@@ -58,6 +59,36 @@ class SubnetConv(nn.Conv2d):
             x, w, self.bias, self.stride, self.padding, self.dilation, self.groups
         )
         return x
+
+
+"""
+Continuous Sample 
+"""
+
+class ContinuousSubnetConv(nn.Conv2d):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.scores = nn.Parameter(torch.Tensor(self.weight.size()))
+        if parser_args.score_init_constant is not None:
+            self.scores.data = (
+                torch.ones_like(self.scores) * parser_args.score_init_constant
+            )
+        else:
+            print("init with kaiming_uniform_")
+            nn.init.kaiming_uniform_(self.scores, a=math.sqrt(5))
+
+    def forward(self, x):
+        g0 = np.random.gumbel(size=self.scores)
+        g1 = np.random.gumbel(size=self.scores)
+        subnet = torch.sigmoid(self.scores + g1 - g0)
+        w = self.weight * subnet
+        x = F.conv2d(
+            x, w, self.bias, self.stride, self.padding, self.dilation, self.groups
+        )
+
+        return x
+
 
 
 """

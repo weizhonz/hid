@@ -122,7 +122,7 @@ def main_worker(args):
     )
 
     # Start training
-    args.train1 = True
+    # args.train1 = True
     for epoch in range(args.start_epoch, args.epochs):
         lr_policy(epoch, iteration=None)
         modifier(args, epoch, model)
@@ -216,7 +216,8 @@ def main_worker(args):
 
     train_from_scratch = True
     if train_from_scratch:
-        args.train1 = False
+        # args.train1 = False
+        unfreeze_model_weights(model)
         freeze_model_subnet(model)
         args.lr = 0.01
         optimizer = get_optimizer(args, model)
@@ -412,7 +413,7 @@ def get_model(args):
     if (
         args.conv_type != "DenseConv"
         and args.conv_type != "SampleSubnetConv"
-        and args.conv_type != "ContinuousSparseConv"
+        and args.conv_type != "ContinuousSubnetConv"
     ):
         if args.prune_rate < 0:
             raise ValueError("Need to set a positive prune rate")
@@ -422,8 +423,8 @@ def get_model(args):
         )
 
     # freezing the weights if we are only doing subnet training
-    # if args.freeze_weights:
-    #     freeze_model_weights(model)
+    if args.freeze_weights:
+        freeze_model_weights(model)
 
     return model
 

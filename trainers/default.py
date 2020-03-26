@@ -4,7 +4,7 @@ import tqdm
 
 from utils.eval_utils import accuracy
 from utils.logging import AverageMeter, ProgressMeter
-from utils.net_utils import updateScore, unfreeze_model_weights, freeze_model_weights
+from utils.net_utils import unfreeze_model_weights, freeze_model_weights
 
 __all__ = ["train", "validate", "modifier"]
 
@@ -42,13 +42,13 @@ def train(train_loader, model, criterion, optimizer, epoch, args, writer):
 
         target0 = target0.cuda(args.gpu, non_blocking=True)
         # compute output
-        m_change = 50
+        #m_change = 50
         # idx = 0
         # while True:
         #     print(idx)
         #     idx += 1
             #m_change = int(40*((1000-idx) / 1000) + 10)
-        m_change = int(args.K)
+        #m_change = int(args.K)
         output = model(image0)
 
         loss = criterion(output, target0)
@@ -63,38 +63,38 @@ def train(train_loader, model, criterion, optimizer, epoch, args, writer):
         # compute gradient and do SGD step
         optimizer.zero_grad()
         loss.backward()
-        K = 100
-        l = {}
-        with torch.no_grad():
-            for n, m in model.named_modules():
-                if hasattr(m, "mask"):
-                    l[n] = m.mask.data.clone()
+        # K = 100
+        # l = {}
+        # with torch.no_grad():
+        #     for n, m in model.named_modules():
+        #         if hasattr(m, "mask"):
+        #             l[n] = m.mask.data.clone()
 
-        while True:
-            updateScore(model, args, K)
-            output = model(image0)
-            loss2 = criterion(output, target0)
-            if loss2 < loss:
-                print("%d %.3f %.3f" % (K, loss.item(), loss2.item()))
-                break
-            K = int(K*0.7)
-            with torch.no_grad():
-                for n, m in model.named_modules():
-                    if hasattr(m, "mask"):
-                        m.mask.data.copy_(l[n])
-
-            # output = model(image0)
-            # loss3 = criterion(output, target0)
-
-            print("%d %.3f %.3f" % (K, loss.item(), loss2.item()))
-
-            if K == 1:
-                updateScore(model, args, m_change)
-                output = model(image0)
-                loss4 = criterion(output, target0)
-                print("%d %d %.3f %.3f %.3f" % (m_change, K, loss.item(), loss2.item(), loss4.item()))
-                break
-        # optimizer.step()
+        # while True:
+        #     updateScore(model, args, K)
+        #     output = model(image0)
+        #     loss2 = criterion(output, target0)
+        #     if loss2 < loss:
+        #         print("%d %.3f %.3f" % (K, loss.item(), loss2.item()))
+        #         break
+        #     K = int(K*0.7)
+        #     with torch.no_grad():
+        #         for n, m in model.named_modules():
+        #             if hasattr(m, "mask"):
+        #                 m.mask.data.copy_(l[n])
+        #
+        #     # output = model(image0)
+        #     # loss3 = criterion(output, target0)
+        #
+        #     print("%d %.3f %.3f" % (K, loss.item(), loss2.item()))
+        #
+        #     if K == 1:
+        #         updateScore(model, args, m_change)
+        #         output = model(image0)
+        #         loss4 = criterion(output, target0)
+        #         print("%d %d %.3f %.3f %.3f" % (m_change, K, loss.item(), loss2.item(), loss4.item()))
+        #         break
+        optimizer.step()
 
         # measure elapsed time
         batch_time.update(time.time() - end)

@@ -99,25 +99,25 @@ def accumulate(model, f):
 
     return acc
 
-def updateScore(model, args, K):
-    for n, m in model.named_modules():
-        if hasattr(m, "mask"):
-            with torch.no_grad():
-                mask_flatten = m.mask.flatten()
-                mask1 = torch.eq(mask_flatten, 1)
-                mask2 = torch.ne(mask1, True)
-                # x = -m.mask.grad + m.weight.grad.pow(2)*0.01
-                x = -m.mask.grad
-                x = x.flatten()
-                x1 = torch.masked_select(x, mask1)
-                x2 = torch.masked_select(x, mask2)
-                topk_min, idx1 = torch.topk(x1, K, largest=False)
-                topk_max, idx2 = torch.topk(x2, K)
-                index_nonzero = torch.nonzero(mask1)
-                index_zero = torch.nonzero(mask2)
-                for i in range(K):
-                    mask_flatten[index_nonzero[idx1[i]]] = False
-                    mask_flatten[index_zero[idx2[i]]] = True
+# def updateScore(model, args, K):
+#     for n, m in model.named_modules():
+#         if hasattr(m, "mask"):
+#             with torch.no_grad():
+#                 mask_flatten = m.mask.flatten()
+#                 mask1 = torch.eq(mask_flatten, 1)
+#                 mask2 = torch.ne(mask1, True)
+#                 # x = -m.mask.grad + m.weight.grad.pow(2)*0.01
+#                 x = -m.mask.grad
+#                 x = x.flatten()
+#                 x1 = torch.masked_select(x, mask1)
+#                 x2 = torch.masked_select(x, mask2)
+#                 topk_min, idx1 = torch.topk(x1, K, largest=False)
+#                 topk_max, idx2 = torch.topk(x2, K)
+#                 index_nonzero = torch.nonzero(mask1)
+#                 index_zero = torch.nonzero(mask2)
+#                 for i in range(K):
+#                     mask_flatten[index_nonzero[idx1[i]]] = False
+#                     mask_flatten[index_zero[idx2[i]]] = True
 
 class LabelSmoothing(nn.Module):
     """
