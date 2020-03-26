@@ -75,21 +75,13 @@ class ContinuousSubnetConv(nn.Conv2d):
                 torch.ones_like(self.scores) * parser_args.score_init_constant
             )
         else:
-            print("init with kaiming_uniform_")
             nn.init.kaiming_uniform_(self.scores, a=math.sqrt(5))
 
     def forward(self, x):
-        print(self.scores.size())
         g0 = torch.as_tensor(np.random.gumbel(size=self.scores.size()), dtype=torch.float, device=torch.device('cuda'))
-        print (g0.type())
-        print(g0.device)
         g1 = torch.as_tensor(np.random.gumbel(size=self.scores.size()), dtype=torch.float, device=torch.device('cuda'))
-        print (self.scores.data.type())
-        subnet = torch.sigmoid(self.scores + g1 - g0)
-        print(subnet.type())
+        subnet = torch.sigmoid((self.scores + g1 - g0)/0.1)
         w = self.weight * subnet
-        print(x.type())
-        print(self.weight.type())
         x = F.conv2d(
             x, w, self.bias, self.stride, self.padding, self.dilation, self.groups
         )
