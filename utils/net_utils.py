@@ -119,6 +119,15 @@ def accumulate(model, f):
 #                     mask_flatten[index_nonzero[idx1[i]]] = False
 #                     mask_flatten[index_zero[idx2[i]]] = True
 
+def updateScoreDiff(model, loss):
+    for n, m in model.named_modules():
+        if hasattr(m, "scores"):
+            with torch.no_grad():
+                print("update score")
+                print("loss", loss)
+                print("m.scores", m.scores)
+                m.scores.grad = loss*m.scores.grad
+
 class LabelSmoothing(nn.Module):
     """
     NLL loss with label smoothing.

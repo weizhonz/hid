@@ -94,6 +94,40 @@ class ContinuousSubnetConv(nn.Conv2d):
         return x
 
 
+"""
+Score function estimator
+"""
+
+class SFESubnetConv(nn.Conv2d):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.scores = nn.Parameter(torch.Tensor(self.weight.size()))
+        if parser_args.score_init_constant is not None:
+            self.scores.data = (
+                torch.ones_like(self.scores) * parser_args.score_init_constant
+            )
+        else:
+            nn.init.kaiming_uniform_(self.scores, a=math.sqrt(5))
+
+    def forward(self, x):
+        eps = 1e-20
+        uniform0 = torch.rand_like(self.scores)
+        uniform1 = torch.rand_like(self.scores)
+        noise = -torch.log(torch.log(uniform0 + eps) / torch.log(uniform1 + eps) + eps)
+
+        subnet = (self.scores + noise > 0).float()
+        print("subnet", subnet)
+        self.scores.grad = subnet - torch.sigmoid(self.scores)
+        print("sigmoid(scores)", torch.sigmoid(self.scores))
+        print("scores.grad", self.scores.grad)
+        w = self.weight * subnet
+        x = F.conv2d(
+            x, w, self.bias, self.stride, self.padding, self.dilation, self.groups
+        )
+
+        return x
+
 
 """
 Sample Based Sparsification

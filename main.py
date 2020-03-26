@@ -415,6 +415,7 @@ def get_model(args):
         args.conv_type != "DenseConv"
         and args.conv_type != "SampleSubnetConv"
         and args.conv_type != "ContinuousSubnetConv"
+        and args.conv_type != "SFESubnetConv"
     ):
         if args.prune_rate < 0:
             raise ValueError("Need to set a positive prune rate")
