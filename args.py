@@ -217,9 +217,9 @@ def parse_arguments():
 
     parser.add_argument(
         "--K",
-        type=float,
-        default=0.01,
-        help="Exchange K weights",
+        type=int,
+        default=10,
+        help="Sample K nets",
     )
 
     parser.add_argument(

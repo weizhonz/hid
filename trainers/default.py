@@ -42,19 +42,24 @@ def train(train_loader, model, criterion, optimizer, epoch, args, writer):
 
         target0 = target0.cuda(args.gpu, non_blocking=True)
         l = 0
-        n = 1
-        for j in range(n):
+        a1 = 0
+        a5 = 0
+        for j in range(args.K):
             output = model(image0)
             loss = criterion(output, target0)
+            acc1, acc5 = accuracy(output, target0, topk=(1, 5))
             l = l + loss
-        l = l / n
+            a1 = a1 + acc1
+            a5 = a5 + acc5
+        l = l / args.K
+        a1 = a1 / args.K
+        a5 = a5 / args.K
         # measure accuracy and record loss
-        acc1, acc5 = accuracy(output, target0, topk=(1, 5))
         # torch.Size([128, 3, 32, 32])
         # 128
         losses.update(l.item(), image0.size(0))
-        top1.update(acc1.item(), images.size(0))
-        top5.update(acc5.item(), images.size(0))
+        top1.update(a1.item(), images.size(0))
+        top5.update(a5.item(), images.size(0))
 
         # compute gradient and do SGD step
         optimizer.zero_grad()
