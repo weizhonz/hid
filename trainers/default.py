@@ -41,23 +41,27 @@ def train(train_loader, model, criterion, optimizer, epoch, args, writer):
             image0 = image0.cuda(args.gpu, non_blocking=True)
 
         target0 = target0.cuda(args.gpu, non_blocking=True)
-        output = model(image0)
-
-        loss = criterion(output, target0)
+        l = 0
+        n = 1
+        for i in range(n):
+            output = model(image0)
+            loss = criterion(output, target0)
+            l = l + loss
+        l = l / n
         # measure accuracy and record loss
         acc1, acc5 = accuracy(output, target0, topk=(1, 5))
         # torch.Size([128, 3, 32, 32])
         # 128
-        losses.update(loss.item(), image0.size(0))
+        losses.update(l.item(), image0.size(0))
         top1.update(acc1.item(), images.size(0))
         top5.update(acc5.item(), images.size(0))
 
         # compute gradient and do SGD step
         optimizer.zero_grad()
         if args.conv_type != "SFESubnetConv":
-            loss.backward()
+            l.backward()
         else:
-            updateScoreDiff(model, loss)
+            updateScoreDiff(model, l)
         optimizer.step()
 
         # measure elapsed time
