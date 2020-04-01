@@ -43,7 +43,7 @@ def train(train_loader, model, criterion, optimizer, epoch, args, writer):
         target0 = target0.cuda(args.gpu, non_blocking=True)
         l = 0
         n = 1
-        for i in range(n):
+        for j in range(n):
             output = model(image0)
             loss = criterion(output, target0)
             l = l + loss
