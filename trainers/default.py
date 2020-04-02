@@ -5,19 +5,22 @@ import tqdm
 from utils.eval_utils import accuracy
 from utils.logging import AverageMeter, ProgressMeter
 from utils.net_utils import updateScoreDiff, unfreeze_model_weights, freeze_model_weights
-
+from torch.utils.tensorboard import SummaryWriter
+writer = SummaryWriter()
 __all__ = ["train", "validate", "modifier"]
 
 
 def train(train_loader, model, criterion, optimizer, epoch, args, writer):
-    batch_time = AverageMeter("Time", ":6.3f")
-    data_time = AverageMeter("Data", ":6.3f")
+    # batch_time = AverageMeter("Time", ":6.3f")
+    # data_time = AverageMeter("Data", ":6.3f")
     losses = AverageMeter("Loss", ":.3f")
     top1 = AverageMeter("Acc@1", ":6.2f")
     top5 = AverageMeter("Acc@5", ":6.2f")
+    #l = [batch_time, data_time, losses, top1, top5]
+    l = [losses, top1, top5]
     progress = ProgressMeter(
         len(train_loader),
-        [batch_time, data_time, losses, top1, top5],
+        l,
         prefix=f"Epoch: [{epoch}]",
     )
 
@@ -35,7 +38,7 @@ def train(train_loader, model, criterion, optimizer, epoch, args, writer):
         image0 = images
         target0 = target
         # measure data loading time
-        data_time.update(time.time() - end)
+        # data_time.update(time.time() - end)
 
         if args.gpu is not None:
             image0 = image0.cuda(args.gpu, non_blocking=True)
@@ -70,7 +73,7 @@ def train(train_loader, model, criterion, optimizer, epoch, args, writer):
         optimizer.step()
 
         # measure elapsed time
-        batch_time.update(time.time() - end)
+        # batch_time.update(time.time() - end)
         end = time.time()
 
         if i % args.print_freq == 0:
@@ -82,14 +85,16 @@ def train(train_loader, model, criterion, optimizer, epoch, args, writer):
 
 
 def validate(val_loader, model, criterion, args, writer, epoch):
-    batch_time = AverageMeter("Time", ":6.3f", write_val=False)
+    # batch_time = AverageMeter("Time", ":6.3f", write_val=False)
     losses = AverageMeter("Loss", ":.3f", write_val=False)
     top1 = AverageMeter("Acc@1", ":6.2f", write_val=False)
     top5 = AverageMeter("Acc@5", ":6.2f", write_val=False)
+    #progress = ProgressMeter(
+    #    len(val_loader), [batch_time, losses, top1, top5], prefix="Test: "
+    #)
     progress = ProgressMeter(
-        len(val_loader), [batch_time, losses, top1, top5], prefix="Test: "
+        len(val_loader), [losses, top1, top5], prefix="Test: "
     )
-
     # switch to evaluate mode
     model.eval()
 
@@ -115,7 +120,7 @@ def validate(val_loader, model, criterion, args, writer, epoch):
             top5.update(acc5.item(), images.size(0))
 
             # measure elapsed time
-            batch_time.update(time.time() - end)
+            # batch_time.update(time.time() - end)
             end = time.time()
 
             if i % args.print_freq == 0:

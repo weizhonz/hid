@@ -214,9 +214,8 @@ def main_worker(args):
         name=args.name,
     )
 
-    train_from_scratch = True
+    train_from_scratch = False
     if train_from_scratch:
-        # args.train1 = False
         unfreeze_model_weights(model)
         freeze_model_subnet(model)
         args.lr = 0.01
