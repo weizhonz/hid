@@ -122,7 +122,7 @@ def accumulate(model, f):
 def printModelScore(model, args):
     for n, m in model.named_modules():
         if hasattr(m, "scores"):
-            print("percent", torch.sum((torch.sigmoid(m.scores.data)<args.K).float() + (torch.sigmoid(m.scores.data)>(1-args.K)).float())/m.scores.data.nelement())
+            print("percent", torch.sum((torch.sigmoid(m.scores.data)<args.D).float() + (torch.sigmoid(m.scores.data)>(1-args.D)).float())/m.scores.data.nelement())
 
 
 def updateScoreDiff(model, loss):
