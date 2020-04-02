@@ -225,7 +225,7 @@ def parse_arguments():
     parser.add_argument(
         "--D",
         type=float,
-        default=0.005,
+        default=0.05,
         help="Min difference",
     )
 

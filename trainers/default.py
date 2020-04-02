@@ -97,7 +97,7 @@ def validate(val_loader, model, criterion, args, writer, epoch):
     )
     # switch to evaluate mode
     model.eval()
-    printModelScore(model)
+    printModelScore(model, args)
     with torch.no_grad():
         end = time.time()
         for i, (images, target) in tqdm.tqdm(
