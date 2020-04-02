@@ -68,7 +68,7 @@ Continuous Sample
 class ContinuousSubnetConv(nn.Conv2d):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-
+        
         self.scores = nn.Parameter(torch.Tensor(self.weight.size()))
         if parser_args.score_init_constant is not None:
             self.scores.data = (
@@ -79,7 +79,7 @@ class ContinuousSubnetConv(nn.Conv2d):
 
     def forward(self, x):
         eps = 1e-20
-        temp = 0.1
+        temp = parser_args.T
         uniform0 = torch.rand_like(self.scores)
         uniform1 = torch.rand_like(self.scores)
         noise = -torch.log(torch.log(uniform0 + eps) / torch.log(uniform1 + eps) + eps)

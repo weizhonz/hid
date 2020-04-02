@@ -229,6 +229,13 @@ def parse_arguments():
         help="Min difference",
     )
 
+    parser.add_argument(
+        "--T",
+        type=float,
+        default=0.1,
+        help="Temperature for gumbel training",
+    )
+
     args = parser.parse_args()
 
     # Allow for use from notebook without config file
