@@ -123,6 +123,7 @@ def printModelScore(model, args):
     for n, m in model.named_modules():
         if hasattr(m, "scores"):
             print("percent", torch.sum((torch.sigmoid(m.scores.data)<args.D).float() + (torch.sigmoid(m.scores.data)>(1-args.D)).float())/m.scores.data.nelement())
+            print("grad info: mean: %.3f, variance: %.3f, max: %.3f, min: %.3f", torch.mean(m.scores.grad), torch.var(m.scores.grad), torch.max(m.scores.grad), torch.min(m.scores.grad))
 
 
 def updateScoreDiff(model, loss):

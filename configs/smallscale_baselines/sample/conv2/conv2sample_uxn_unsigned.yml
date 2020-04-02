@@ -27,4 +27,3 @@ init: xavier_normal
 
 # ===== Hardware setup ===== #
 workers: 4
-log_dir: /home/vivekr/prod/hidden-networks/runs/baseline

@@ -70,6 +70,7 @@ def train(train_loader, model, criterion, optimizer, epoch, args, writer):
             l.backward()
         else:
             updateScoreDiff(model, l)
+        printModelScore(model, args)
         optimizer.step()
 
         # measure elapsed time
