@@ -63,7 +63,7 @@ def train(train_loader, model, criterion, optimizer, epoch, args, writer):
         losses.update(l.item(), image0.size(0))
         top1.update(a1.item(), images.size(0))
         top5.update(a5.item(), images.size(0))
-        printModelScore(model)
+
         # compute gradient and do SGD step
         optimizer.zero_grad()
         if args.conv_type != "SFESubnetConv":
@@ -97,7 +97,7 @@ def validate(val_loader, model, criterion, args, writer, epoch):
     )
     # switch to evaluate mode
     model.eval()
-
+    printModelScore(model)
     with torch.no_grad():
         end = time.time()
         for i, (images, target) in tqdm.tqdm(

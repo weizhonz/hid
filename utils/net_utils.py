@@ -122,7 +122,6 @@ def accumulate(model, f):
 def printModelScore(model):
     for n, m in model.named_modules():
         if hasattr(m, "scores"):
-            print("m.scores", m.scores.data)
             print("percent", torch.sum((torch.sigmoid(m.scores.data)<0.01).float() + (torch.sigmoid(m.scores.data)>0.99).float())/m.scores.data.nelement())
 
 
