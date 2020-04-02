@@ -68,7 +68,7 @@ Continuous Sample
 class ContinuousSubnetConv(nn.Conv2d):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        
+
         self.scores = nn.Parameter(torch.Tensor(self.weight.size()))
         if parser_args.score_init_constant is not None:
             self.scores.data = (
