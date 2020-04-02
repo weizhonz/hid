@@ -4,7 +4,7 @@ import tqdm
 
 from utils.eval_utils import accuracy
 from utils.logging import AverageMeter, ProgressMeter
-from utils.net_utils import updateScoreDiff, unfreeze_model_weights, freeze_model_weights
+from utils.net_utils import updateScoreDiff, unfreeze_model_weights, freeze_model_weights, printModelScore
 from torch.utils.tensorboard import SummaryWriter
 writer = SummaryWriter()
 __all__ = ["train", "validate", "modifier"]
@@ -63,7 +63,7 @@ def train(train_loader, model, criterion, optimizer, epoch, args, writer):
         losses.update(l.item(), image0.size(0))
         top1.update(a1.item(), images.size(0))
         top5.update(a5.item(), images.size(0))
-
+        printModelScore(model)
         # compute gradient and do SGD step
         optimizer.zero_grad()
         if args.conv_type != "SFESubnetConv":
