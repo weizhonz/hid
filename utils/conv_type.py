@@ -77,6 +77,10 @@ class ContinuousSubnetConv(nn.Conv2d):
         else:
             nn.init.kaiming_uniform_(self.scores, a=math.sqrt(5))
 
+    @property
+    def clamped_scores(self):
+        return torch.sigmoid(self.scores)
+
     def forward(self, x):
         eps = 1e-20
         temp = parser_args.T

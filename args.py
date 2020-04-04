@@ -218,7 +218,7 @@ def parse_arguments():
     parser.add_argument(
         "--K",
         type=int,
-        default=10,
+        default=20,
         help="Sample K nets",
     )
 
@@ -232,7 +232,7 @@ def parse_arguments():
     parser.add_argument(
         "--T",
         type=float,
-        default=0.1,
+        default=1,
         help="Temperature for gumbel training",
     )
 
