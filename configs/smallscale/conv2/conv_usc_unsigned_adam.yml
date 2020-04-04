@@ -1,0 +1,26 @@
+# Architecture
+arch: Conv2
+
+# ===== Dataset ===== #
+data: dataset/
+set: CIFAR10
+name: conv2_usc_unsigned
+
+# ===== Learning Rate Policy ======== #
+optimizer: sgd
+lr: 0.0002
+
+# ===== Network training config ===== #
+epochs: 100
+batch_size: 60
+
+# ===== Sparsity =========== #
+conv_type: SubnetConv
+bn_type: NonAffineBatchNorm
+freeze_weights: True
+prune_rate: -1
+init: signed_constant
+# scale_fan: True
+
+# ===== Hardware setup ===== #
+workers: 4
