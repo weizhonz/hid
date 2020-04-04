@@ -12,7 +12,7 @@ import torch.optim
 import torch.utils.data
 import torch.utils.data.distributed
 
-from utils.conv_type import FixedSubnetConv, SampleSubnetConv
+from utils.conv_type import FixedSubnetConv, SampleSubnetConv, ContinuousSubnetConv
 from utils.logging import AverageMeter, ProgressMeter
 from utils.net_utils import (
     set_model_prune_rate,
@@ -181,7 +181,7 @@ def main_worker(args):
             count = 0
             sum_pr = 0.0
             for n, m in model.named_modules():
-                if isinstance(m, SampleSubnetConv):
+                if isinstance(m, SampleSubnetConv) or isinstance(m, ContinuousSubnetConv):
                     # avg pr across 10 samples
                     pr = 0.0
                     for _ in range(10):
@@ -193,11 +193,14 @@ def main_worker(args):
                         )
                     pr /= 10.0
                     writer.add_scalar("pr/{}".format(n), pr, epoch)
+                    print(n, " ", pr)
                     sum_pr += pr
                     count += 1
 
             args.prune_rate = sum_pr / count
             writer.add_scalar("pr/average", args.prune_rate, epoch)
+            print("average ", args.prune_rate)
+
 
         writer.add_scalar("test/lr", cur_lr, epoch)
         end_epoch = time.time()
