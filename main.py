@@ -460,7 +460,7 @@ def get_optimizer(args, model):
         )
     elif args.optimizer == "adam":
         optimizer = torch.optim.Adam(
-            filter(lambda p: p.requires_grad, model.parameters()), lr=args.lr
+            filter(lambda p: p.requires_grad, model.parameters()), lr=args.lr, weight_decay=args.weight_decay
         )
 
     return optimizer
