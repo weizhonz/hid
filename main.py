@@ -177,7 +177,7 @@ def main_worker(args):
             writer, prefix="diagnostics", global_step=epoch
         )
 
-        if args.conv_type == "SampleSubnetConv":
+        if args.conv_type == "SampleSubnetConv" or args.conv_type == "ContinuousSubnetConv":
             count = 0
             sum_pr = 0.0
             for n, m in model.named_modules():
