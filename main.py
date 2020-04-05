@@ -66,7 +66,7 @@ def main_worker(args):
     optimizer = get_optimizer(args, model)
     data = get_dataset(args)
     lr_policy = get_policy(args.lr_policy)(optimizer, args)
-    scheduler = ReduceLROnPlateau(optimizer, step_size=30, gamma=0.1)
+    scheduler = ReduceLROnPlateau(optimizer, verbose=True)
     if args.label_smoothing is None:
         criterion = nn.CrossEntropyLoss().cuda()
     else:
