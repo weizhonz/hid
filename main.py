@@ -129,7 +129,7 @@ def main_worker(args):
         modifier(args, epoch, model)
 
         cur_lr = get_lr(optimizer)
-
+        print("current lr: ", cur_lr)
         # train for one epoch
         start_train = time.time()
         train_acc1, train_acc5 = train(
