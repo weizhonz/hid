@@ -66,7 +66,7 @@ def main_worker(args):
     optimizer = get_optimizer(args, model)
     data = get_dataset(args)
     lr_policy = get_policy(args.lr_policy)(optimizer, args)
-    scheduler = StepLR(optimizer, step_size=30, gamma=0.1)
+    scheduler = ReduceLROnPlateau(optimizer, step_size=30, gamma=0.1)
     if args.label_smoothing is None:
         criterion = nn.CrossEntropyLoss().cuda()
     else:
@@ -125,7 +125,7 @@ def main_worker(args):
 
     # Start training
     for epoch in range(args.start_epoch, args.epochs):
-        lr_policy(epoch, iteration=None)
+        # lr_policy(epoch, iteration=None)
         modifier(args, epoch, model)
 
         cur_lr = get_lr(optimizer)
@@ -139,9 +139,9 @@ def main_worker(args):
 
         # evaluate on validation set
         start_validation = time.time()
-        acc1, acc5 = validate(data.val_loader, model, criterion, args, writer, epoch)
+        acc1, acc5, losses = validate(data.val_loader, model, criterion, args, writer, epoch)
         validation_time.update((time.time() - start_validation) / 60)
-        # scheduler.step()
+        scheduler.step(losses)
 
         # remember best acc@1 and save checkpoint
         is_best = acc1 > best_acc1
