@@ -4,6 +4,7 @@ import random
 import time
 
 from torch.utils.tensorboard import SummaryWriter
+from torch.optim.lr_scheduler import *
 import torch
 import torch.nn as nn
 import torch.nn.parallel
@@ -61,10 +62,11 @@ def main_worker(args):
     if args.pretrained:
         pretrained(args, model)
 
+
     optimizer = get_optimizer(args, model)
     data = get_dataset(args)
     lr_policy = get_policy(args.lr_policy)(optimizer, args)
-
+    scheduler = StepLR(optimizer, step_size=30, gamma=0.1)
     if args.label_smoothing is None:
         criterion = nn.CrossEntropyLoss().cuda()
     else:
@@ -140,6 +142,7 @@ def main_worker(args):
         start_validation = time.time()
         acc1, acc5 = validate(data.val_loader, model, criterion, args, writer, epoch)
         validation_time.update((time.time() - start_validation) / 60)
+        # scheduler.step()
 
         # remember best acc@1 and save checkpoint
         is_best = acc1 > best_acc1
@@ -214,8 +217,9 @@ def main_worker(args):
         curr_acc1=acc1,
         curr_acc5=acc5,
         base_config=args.config,
-        name=args.name,
+        name=args.name+args.rep_count,
     )
+    print("best_acc1: ", best_acc1)
 
     train_from_scratch = False
     if train_from_scratch:
@@ -493,7 +497,7 @@ def get_directories(args):
         rep_count = 0
         while _run_dir_exists(run_base_dir / str(rep_count)):
             rep_count += 1
-
+        args.rep_count = "/"+str(rep_count)
         run_base_dir = run_base_dir / str(rep_count)
 
     log_base_dir = run_base_dir / "logs"
