@@ -33,28 +33,52 @@ class GetSubnet(autograd.Function):
         # send the gradient g straight-through on the backward pass.
         return g, None
 
+# # Not learning weights, finding subnet
+# class SubnetConv(nn.Conv2d):
+#     def __init__(self, *args, **kwargs):
+#         super().__init__(*args, **kwargs)
+#
+#         # self.weight.data = torch.mul(self.weight.data, 0.01)
+#         self.mask = nn.Parameter(torch.Tensor(self.weight.size()))
+#         torch.nn.init.zeros_(self.mask)
+#
+#
+#     def set_prune_rate(self, prune_rate):
+#         self.prune_rate = prune_rate #prune_rate is the weights remained
+#         with torch.no_grad():
+#             m = torch.Tensor(self.weight.size()).uniform_() < self.prune_rate
+#             self.mask.masked_fill_(m, 1)
+#
+#     @property
+#     def clamped_scores(self):
+#         return self.scores.abs()
+#
+#     def forward(self, x):
+#         w = self.weight * self.mask
+#         x = F.conv2d(
+#             x, w, self.bias, self.stride, self.padding, self.dilation, self.groups
+#         )
+#         return x
+
+
 # Not learning weights, finding subnet
 class SubnetConv(nn.Conv2d):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        # self.weight.data = torch.mul(self.weight.data, 0.01)
-        self.mask = nn.Parameter(torch.Tensor(self.weight.size()))
-        torch.nn.init.zeros_(self.mask)
-
+        self.scores = nn.Parameter(torch.Tensor(self.weight.size()))
+        nn.init.kaiming_uniform_(self.scores, a=math.sqrt(5))
 
     def set_prune_rate(self, prune_rate):
-        self.prune_rate = prune_rate #prune_rate is the weights remained
-        with torch.no_grad():
-            m = torch.Tensor(self.weight.size()).uniform_() < self.prune_rate
-            self.mask.masked_fill_(m, 1)
+        self.prune_rate = prune_rate
 
     @property
     def clamped_scores(self):
         return self.scores.abs()
 
     def forward(self, x):
-        w = self.weight * self.mask
+        subnet = GetSubnet.apply(self.clamped_scores, self.prune_rate)
+        w = self.weight * subnet
         x = F.conv2d(
             x, w, self.bias, self.stride, self.padding, self.dilation, self.groups
         )
