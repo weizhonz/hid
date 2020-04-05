@@ -125,7 +125,7 @@ def main_worker(args):
 
     # Start training
     for epoch in range(args.start_epoch, args.epochs):
-        lr_policy(epoch, iteration=None)
+        # lr_policy(epoch, iteration=None)
         modifier(args, epoch, model)
 
         cur_lr = get_lr(optimizer)
