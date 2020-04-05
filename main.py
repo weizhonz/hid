@@ -66,7 +66,7 @@ def main_worker(args):
     optimizer = get_optimizer(args, model)
     data = get_dataset(args)
     lr_policy = get_policy(args.lr_policy)(optimizer, args)
-    scheduler = ReduceLROnPlateau(optimizer, verbose=True)
+    scheduler = ReduceLROnPlateau(optimizer, factor=0.7, verbose=True)
     if args.label_smoothing is None:
         criterion = nn.CrossEntropyLoss().cuda()
     else:
@@ -219,6 +219,8 @@ def main_worker(args):
         name=args.name+args.rep_count,
     )
     print("best_acc1: ", best_acc1)
+    print("rep_count: ", args.rep_count)
+
 
     train_from_scratch = False
     if train_from_scratch:
