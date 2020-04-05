@@ -124,7 +124,6 @@ def main_worker(args):
     )
 
     # Start training
-    # args.train1 = True
     for epoch in range(args.start_epoch, args.epochs):
         lr_policy(epoch, iteration=None)
         modifier(args, epoch, model)
@@ -142,7 +141,7 @@ def main_worker(args):
         start_validation = time.time()
         acc1, acc5 = validate(data.val_loader, model, criterion, args, writer, epoch)
         validation_time.update((time.time() - start_validation) / 60)
-        # scheduler.step()
+        scheduler.step()
 
         # remember best acc@1 and save checkpoint
         is_best = acc1 > best_acc1
