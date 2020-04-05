@@ -126,10 +126,10 @@ def parse_arguments():
         "--lr-policy", default="constant_lr", help="Policy for the learning rate."
     )
     parser.add_argument(
-        "--multistep-lr-adjust", default=30, type=int, help="Interval to drop lr"
+        "--lr-adjust", default=30, type=int, help="Interval to drop lr"
     )
     parser.add_argument(
-        "--multistep-lr-gamma", default=0.1, type=int, help="Multistep multiplier"
+        "--lr-gamma", default=0.1, type=int, help="Multistep multiplier"
     )
     parser.add_argument(
         "--name", default=None, type=str, help="Experiment name to append to filepath"
