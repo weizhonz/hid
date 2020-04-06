@@ -106,21 +106,22 @@ class ContinuousSubnetConv(nn.Conv2d):
         return torch.sigmoid(self.scores)
 
     def forward(self, x):
-        eps = 1e-20
-        temp = parser_args.T
-        uniform0 = torch.rand_like(self.scores)
-        uniform1 = torch.rand_like(self.scores)
-        noise = -torch.log(torch.log(uniform0 + eps) / torch.log(uniform1 + eps) + eps)
-        # g0 = torch.as_tensor(np.random.gumbel(size=self.scores.size()), dtype=torch.float, device=torch.device('cuda'))
-        # g1 = torch.as_tensor(np.random.gumbel(size=self.scores.size()), dtype=torch.float, device=torch.device('cuda'))
-        subnet = torch.sigmoid((self.scores + noise)/temp)
+        if self.training:
+            eps = 1e-20
+            temp = parser_args.T
+            uniform0 = torch.rand_like(self.scores)
+            uniform1 = torch.rand_like(self.scores)
+            noise = -torch.log(torch.log(uniform0 + eps) / torch.log(uniform1 + eps) + eps)
+            # g0 = torch.as_tensor(np.random.gumbel(size=self.scores.size()), dtype=torch.float, device=torch.device('cuda'))
+            # g1 = torch.as_tensor(np.random.gumbel(size=self.scores.size()), dtype=torch.float, device=torch.device('cuda'))
+            subnet = torch.sigmoid((self.scores + noise)/temp)
+        else:
+            subnet = GetSubnet.apply(self.scores, 0.46)
         w = self.weight * subnet
         x = F.conv2d(
             x, w, self.bias, self.stride, self.padding, self.dilation, self.groups
         )
-
         return x
-
 
 """
 Score function estimator
