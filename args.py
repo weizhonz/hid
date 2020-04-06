@@ -236,6 +236,13 @@ def parse_arguments():
         help="Temperature for gumbel training",
     )
 
+    parser.add_argument(
+        "--TA",
+        type=float,
+        default=0,
+        help="Tempearature annealing",
+    )
+
     args = parser.parse_args()
 
     # Allow for use from notebook without config file

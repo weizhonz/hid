@@ -127,11 +127,14 @@ def main_worker(args):
     # Start training
     for epoch in range(args.start_epoch, args.epochs):
         lr_policy(epoch, iteration=None)
-        args.T = 250**(epoch/args.epochs)
+
+        if args.TA != 0:
+            args.T = args.TA**(epoch/args.epochs)
         modifier(args, epoch, model)
 
         cur_lr = get_lr(optimizer)
         print("current lr: ", cur_lr)
+        print("current temp: ", args.T)
         # train for one epoch
         start_train = time.time()
         train_acc1, train_acc5 = train(
