@@ -144,7 +144,9 @@ class ContinuousSubnetConv(nn.Conv2d):
             )
         pr /= 10.0
         print("prune rate: ", pr)
-        subnet3 = GetSubnet.apply(self.scores, pr)
+        pr2 = self.clamped_scores.mean().item()
+        print("prune rate2: ", pr2)
+        subnet3 = GetSubnet.apply(self.scores, pr2)
         print("subnet3 left: ", subnet3.mean().item())
         # print(self.clamped_scores)
         print("difference rate: ", (subnet2 != subnet3).float().mean().item())
