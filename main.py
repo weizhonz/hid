@@ -66,7 +66,8 @@ def main_worker(args):
     optimizer = get_optimizer(args, model)
     data = get_dataset(args)
     lr_policy = get_policy(args.lr_policy)(optimizer, args)
-    # scheduler = ReduceLROnPlateau(optimizer, factor=0.1, verbose=True)
+    if args.lr_policy == "PLA":
+        scheduler = ReduceLROnPlateau(optimizer, factor=0.1, verbose=True)
     # scheduler = ExponentialLR(optimizer, gamma=0.97)
     if args.label_smoothing is None:
         criterion = nn.CrossEntropyLoss().cuda()
@@ -126,7 +127,8 @@ def main_worker(args):
 
     # Start training
     for epoch in range(args.start_epoch, args.epochs):
-        lr_policy(epoch, iteration=None)
+        if args.lr_policy != "PLA":
+            lr_policy(epoch, iteration=None)
 
         if args.TA != 0:
             args.T = args.TA**(epoch/args.epochs)
@@ -146,7 +148,8 @@ def main_worker(args):
         start_validation = time.time()
         acc1, acc5, losses = validate(data.val_loader, model, criterion, args, writer, epoch)
         validation_time.update((time.time() - start_validation) / 60)
-        # scheduler.step(losses)
+        if args.lr_policy != "PLA":
+            scheduler.step(losses)
         # scheduler.step()
 
         # remember best acc@1 and save checkpoint
