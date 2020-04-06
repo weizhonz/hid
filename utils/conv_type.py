@@ -113,7 +113,7 @@ class ContinuousSubnetConv(nn.Conv2d):
             uniform0 = torch.rand_like(self.scores)
             uniform1 = torch.rand_like(self.scores)
             noise = -torch.log(torch.log(uniform0 + eps) / torch.log(uniform1 + eps) + eps)
-            subnet = torch.sigmoid((self.scores + noise)/temp)
+            subnet = torch.sigmoid((self.scores + noise)*temp)
         else:
             subnet = torch.rand_like(self.scores) < self.clamped_scores.float()
 
