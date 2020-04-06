@@ -106,19 +106,41 @@ class ContinuousSubnetConv(nn.Conv2d):
         return torch.sigmoid(self.scores)
 
     def forward(self, x):
+        # if self.training:
+        #     print("in training")
+        #     eps = 1e-20
+        #     temp = parser_args.T
+        #     uniform0 = torch.rand_like(self.scores)
+        #     uniform1 = torch.rand_like(self.scores)
+        #     noise = -torch.log(torch.log(uniform0 + eps) / torch.log(uniform1 + eps) + eps)
+        #     # g0 = torch.as_tensor(np.random.gumbel(size=self.scores.size()), dtype=torch.float, device=torch.device('cuda'))
+        #     # g1 = torch.as_tensor(np.random.gumbel(size=self.scores.size()), dtype=torch.float, device=torch.device('cuda'))
+        #     subnet = torch.sigmoid((self.scores + noise)/temp)
+        # else:
+        #     print("in evaluate")
+        #     subnet = GetSubnet.apply(self.scores, 0.46)
+
+
+        print("in training")
+        eps = 1e-20
+        temp = parser_args.T
+        uniform0 = torch.rand_like(self.scores)
+        uniform1 = torch.rand_like(self.scores)
+        noise = -torch.log(torch.log(uniform0 + eps) / torch.log(uniform1 + eps) + eps)
+        subnet1 = torch.sigmoid((self.scores + noise)/temp)
+
+        print("in evaluate")
+        subnet2 = GetSubnet.apply(self.scores, 0.46)
+        print(subnet1)
+        print(subnet2)
+        print(self.clamped_scores)
+        print(subnet1 != subnet2)
+        subnet = None
         if self.training:
-            print("in training")
-            eps = 1e-20
-            temp = parser_args.T
-            uniform0 = torch.rand_like(self.scores)
-            uniform1 = torch.rand_like(self.scores)
-            noise = -torch.log(torch.log(uniform0 + eps) / torch.log(uniform1 + eps) + eps)
-            # g0 = torch.as_tensor(np.random.gumbel(size=self.scores.size()), dtype=torch.float, device=torch.device('cuda'))
-            # g1 = torch.as_tensor(np.random.gumbel(size=self.scores.size()), dtype=torch.float, device=torch.device('cuda'))
-            subnet = torch.sigmoid((self.scores + noise)/temp)
+            subnet = subnet1
         else:
-            print("in evaluate")
-            subnet = GetSubnet.apply(self.scores, 0.46)
+            subnet = subnet2
+
         w = self.weight * subnet
         x = F.conv2d(
             x, w, self.bias, self.stride, self.padding, self.dilation, self.groups
