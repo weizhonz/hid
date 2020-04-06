@@ -137,7 +137,7 @@ class ContinuousSubnetConv(nn.Conv2d):
         pr = 0.0
         for _ in range(10):
             pr += (
-                (torch.rand_like(self.clamped_scores) >= self.clamped_scores)
+                (torch.rand_like(self.clamped_scores) < self.clamped_scores)
                     .float()
                     .mean()
                     .item()

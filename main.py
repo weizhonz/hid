@@ -190,7 +190,7 @@ def main_worker(args):
                     pr = 0.0
                     for _ in range(10):
                         pr += (
-                            (torch.rand_like(m.clamped_scores) >= m.clamped_scores)
+                            (torch.rand_like(m.clamped_scores) < m.clamped_scores)
                             .float()
                             .mean()
                             .item()
