@@ -84,7 +84,7 @@ def main_worker(args):
 
     # Data loading code
     if args.evaluate:
-        acc1, acc5 = validate(
+        acc1, acc5, _ = validate(
             data.val_loader, model, criterion, args, writer=None, epoch=args.start_epoch
         )
 

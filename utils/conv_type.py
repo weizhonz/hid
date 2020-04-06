@@ -107,6 +107,7 @@ class ContinuousSubnetConv(nn.Conv2d):
 
     def forward(self, x):
         if self.training:
+            print("in training")
             eps = 1e-20
             temp = parser_args.T
             uniform0 = torch.rand_like(self.scores)
@@ -116,6 +117,7 @@ class ContinuousSubnetConv(nn.Conv2d):
             # g1 = torch.as_tensor(np.random.gumbel(size=self.scores.size()), dtype=torch.float, device=torch.device('cuda'))
             subnet = torch.sigmoid((self.scores + noise)/temp)
         else:
+            print("in evaluate")
             subnet = GetSubnet.apply(self.scores, 0.46)
         w = self.weight * subnet
         x = F.conv2d(
