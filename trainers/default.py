@@ -97,7 +97,7 @@ def validate(val_loader, model, criterion, args, writer, epoch):
         len(val_loader), [losses, top1, top5], prefix="Test: "
     )
     # switch to evaluate mode
-    # model.eval()
+    model.eval()
     printModelScore(model, args)
     with torch.no_grad():
         end = time.time()
