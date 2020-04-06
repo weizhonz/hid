@@ -133,10 +133,7 @@ class ContinuousSubnetConv(nn.Conv2d):
         subnet2 = (torch.rand_like(self.scores) < self.clamped_scores).float()
         print("in evaluate_sort")
         subnet3 = GetSubnet.apply(self.scores, 0.46)
-        print(subnet1)
-        print(subnet2)
-        print(subnet3)
-        print(self.clamped_scores)
+        # print(self.clamped_scores)
         print(torch.sum((subnet2 != subnet3).float())/subnet1.nelement())
         subnet = None
         if self.training:
