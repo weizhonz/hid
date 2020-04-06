@@ -150,7 +150,7 @@ def main_worker(args):
         start_validation = time.time()
         acc1, acc5, losses = validate(data.val_loader, model, criterion, args, writer, epoch)
         validation_time.update((time.time() - start_validation) / 60)
-        if args.lr_policy != "PLA":
+        if args.lr_policy == "PLA":
             scheduler.step(losses)
         # scheduler.step()
 
