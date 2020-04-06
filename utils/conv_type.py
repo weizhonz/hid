@@ -152,7 +152,7 @@ class ContinuousSubnetConv(nn.Conv2d):
         if self.training:
             subnet = subnet1
         else:
-            subnet = subnet2
+            subnet = subnet3
 
         w = self.weight * subnet
         x = F.conv2d(
