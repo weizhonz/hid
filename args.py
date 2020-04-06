@@ -243,6 +243,13 @@ def parse_arguments():
         help="Tempearature annealing",
     )
 
+    parser.add_argument(
+        "--PLA-factor",
+        type=float,
+        default=0.1,
+        help="PLA-factor",
+    )
+
     args = parser.parse_args()
 
     # Allow for use from notebook without config file

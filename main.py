@@ -67,7 +67,7 @@ def main_worker(args):
     data = get_dataset(args)
 
     if args.lr_policy == "PLA":
-        scheduler = ReduceLROnPlateau(optimizer, factor=0.1, verbose=True)
+        scheduler = ReduceLROnPlateau(optimizer, factor=args.PLA_factor, verbose=True)
     else:
         lr_policy = get_policy(args.lr_policy)(optimizer, args)
     # scheduler = ExponentialLR(optimizer, gamma=0.97)
