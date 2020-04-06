@@ -128,7 +128,8 @@ class ContinuousSubnetConv(nn.Conv2d):
         uniform1 = torch.rand_like(self.scores)
         noise = -torch.log(torch.log(uniform0 + eps) / torch.log(uniform1 + eps) + eps)
         subnet1 = torch.sigmoid((self.scores + noise)/temp)
-
+        print("percent < 0.01: ", torch.sum(self.clamped_scores < parser_args.D).float() / self.scores.nelement())
+        print("percent > 0.99: ", torch.sum(self.clamped_scores > (1 - parser_args.D)).float() / self.scores.nelement())
         print("in evaluate")
         subnet2 = (torch.rand_like(self.scores) < self.clamped_scores).float()
         print("in evaluate_sort")
