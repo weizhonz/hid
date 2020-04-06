@@ -109,7 +109,7 @@ class ContinuousSubnetConv(nn.Conv2d):
         if self.training:
             eps = 1e-20
             temp = parser_args.T
-            print("temperature: ", temp)
+            # print("temperature: ", temp)
             uniform0 = torch.rand_like(self.scores)
             uniform1 = torch.rand_like(self.scores)
             noise = -torch.log(torch.log(uniform0 + eps) / torch.log(uniform1 + eps) + eps)
