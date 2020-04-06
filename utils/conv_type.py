@@ -154,7 +154,7 @@ class ContinuousSubnetConv(nn.Conv2d):
         if self.training:
             subnet = subnet1
         else:
-            print("use mask1")
+            print("use mask3")
             subnet = subnet1
 
         w = self.weight * subnet
