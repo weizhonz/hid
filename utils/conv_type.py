@@ -134,7 +134,7 @@ class ContinuousSubnetConv(nn.Conv2d):
         print(subnet1)
         print(subnet2)
         print(self.clamped_scores)
-        print(subnet1 != subnet2)
+        print(torch.sum((subnet1 != subnet2).float())/subnet1.nelement())
         subnet = None
         if self.training:
             subnet = subnet1
