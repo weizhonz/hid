@@ -106,56 +106,53 @@ class ContinuousSubnetConv(nn.Conv2d):
         return torch.sigmoid(self.scores)
 
     def forward(self, x):
-        # if self.training:
-        #     print("in training")
-        #     eps = 1e-20
-        #     temp = parser_args.T
-        #     uniform0 = torch.rand_like(self.scores)
-        #     uniform1 = torch.rand_like(self.scores)
-        #     noise = -torch.log(torch.log(uniform0 + eps) / torch.log(uniform1 + eps) + eps)
-        #     # g0 = torch.as_tensor(np.random.gumbel(size=self.scores.size()), dtype=torch.float, device=torch.device('cuda'))
-        #     # g1 = torch.as_tensor(np.random.gumbel(size=self.scores.size()), dtype=torch.float, device=torch.device('cuda'))
-        #     subnet = torch.sigmoid((self.scores + noise)/temp)
-        # else:
-        #     print("in evaluate")
-        #     subnet = GetSubnet.apply(self.scores, 0.46)
-
-
-        print("in training")
-        eps = 1e-20
-        temp = parser_args.T
-        uniform0 = torch.rand_like(self.scores)
-        uniform1 = torch.rand_like(self.scores)
-        noise = -torch.log(torch.log(uniform0 + eps) / torch.log(uniform1 + eps) + eps)
-        subnet1 = torch.sigmoid((self.scores + noise)/temp)
-        print("percent < 0.01: ", (self.clamped_scores < parser_args.D).float().mean().item())
-        print("percent > 0.99: ", (self.clamped_scores > (1 - parser_args.D)).float().mean().item())
-        print("in evaluate")
-        subnet2 = (torch.rand_like(self.scores) < self.clamped_scores).float()
-        print("subnet2 left: ", subnet2.mean().item())
-        print("in evaluate_sort")
-        pr = 0.0
-        for _ in range(10):
-            pr += (
-                (torch.rand_like(self.clamped_scores) < self.clamped_scores)
-                    .float()
-                    .mean()
-                    .item()
-            )
-        pr /= 10.0
-        print("prune rate: ", pr)
-        pr2 = self.clamped_scores.mean().item()
-        print("prune rate2: ", pr2)
-        subnet3 = GetSubnet.apply(self.scores, pr2)
-        print("subnet3 left: ", subnet3.mean().item())
-        # print(self.clamped_scores)
-        print("difference rate: ", (subnet2 != subnet3).float().mean().item())
-        subnet = None
         if self.training:
-            subnet = subnet1
+            eps = 1e-20
+            temp = parser_args.T
+            print("temperature: ", temp)
+            uniform0 = torch.rand_like(self.scores)
+            uniform1 = torch.rand_like(self.scores)
+            noise = -torch.log(torch.log(uniform0 + eps) / torch.log(uniform1 + eps) + eps)
+            subnet = torch.sigmoid((self.scores + noise)/temp)
         else:
-            print("use mask3")
-            subnet = subnet3
+            subnet = torch.rand_like(self.scores) < self.clamped_scores.float()
+
+
+        # print("in training")
+        # eps = 1e-20
+        # temp = parser_args.T
+        # uniform0 = torch.rand_like(self.scores)
+        # uniform1 = torch.rand_like(self.scores)
+        # noise = -torch.log(torch.log(uniform0 + eps) / torch.log(uniform1 + eps) + eps)
+        # subnet1 = torch.sigmoid((self.scores + noise)/temp)
+        # print("percent < 0.01: ", (self.clamped_scores < parser_args.D).float().mean().item())
+        # print("percent > 0.99: ", (self.clamped_scores > (1 - parser_args.D)).float().mean().item())
+        # print("in evaluate")
+        # subnet2 = (torch.rand_like(self.scores) < self.clamped_scores).float()
+        # print("subnet2 left: ", subnet2.mean().item())
+        # print("in evaluate_sort")
+        # pr = 0.0
+        # for _ in range(10):
+        #     pr += (
+        #         (torch.rand_like(self.clamped_scores) < self.clamped_scores)
+        #             .float()
+        #             .mean()
+        #             .item()
+        #     )
+        # pr /= 10.0
+        # print("prune rate: ", pr)
+        # pr2 = self.clamped_scores.mean().item()
+        # print("prune rate2: ", pr2)
+        # subnet3 = GetSubnet.apply(self.scores, pr2)
+        # print("subnet3 left: ", subnet3.mean().item())
+        # # print(self.clamped_scores)
+        # print("difference rate: ", (subnet2 != subnet3).float().mean().item())
+        # subnet = None
+        # if self.training:
+        #     subnet = subnet1
+        # else:
+        #     print("use mask3")
+        #     subnet = subnet3
 
         w = self.weight * subnet
         x = F.conv2d(
