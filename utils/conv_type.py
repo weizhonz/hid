@@ -132,6 +132,7 @@ class ContinuousSubnetConv(nn.Conv2d):
         print("percent > 0.99: ", self.clamped_scores > (1 - parser_args.D).float().mean().item())
         print("in evaluate")
         subnet2 = (torch.rand_like(self.scores) < self.clamped_scores).float()
+        print("subnet2 left: ", subnet2.mean().item())
         print("in evaluate_sort")
         pr = 0.0
         for _ in range(10):
@@ -142,10 +143,11 @@ class ContinuousSubnetConv(nn.Conv2d):
                     .item()
             )
         pr /= 10.0
-        print("prune rate")
+        print("prune rate: ", pr)
         subnet3 = GetSubnet.apply(self.scores, pr)
+        print("subnet3 left: ", subnet3.mean().item())
         # print(self.clamped_scores)
-        print((subnet2 != subnet3).float().mean().item())
+        print("difference rate: ", (subnet2 != subnet3).float().mean().item())
         subnet = None
         if self.training:
             subnet = subnet1
