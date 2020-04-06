@@ -128,14 +128,24 @@ class ContinuousSubnetConv(nn.Conv2d):
         uniform1 = torch.rand_like(self.scores)
         noise = -torch.log(torch.log(uniform0 + eps) / torch.log(uniform1 + eps) + eps)
         subnet1 = torch.sigmoid((self.scores + noise)/temp)
-        print("percent < 0.01: ", torch.sum(self.clamped_scores < parser_args.D).float() / self.scores.nelement())
-        print("percent > 0.99: ", torch.sum(self.clamped_scores > (1 - parser_args.D)).float() / self.scores.nelement())
+        print("percent < 0.01: ", self.clamped_scores < parser_args.D.float().mean().item())
+        print("percent > 0.99: ", self.clamped_scores > (1 - parser_args.D).float().mean().item())
         print("in evaluate")
         subnet2 = (torch.rand_like(self.scores) < self.clamped_scores).float()
         print("in evaluate_sort")
-        subnet3 = GetSubnet.apply(self.scores, 0.46)
+        pr = 0.0
+        for _ in range(10):
+            pr += (
+                (torch.rand_like(self.clamped_scores) >= self.clamped_scores)
+                    .float()
+                    .mean()
+                    .item()
+            )
+        pr /= 10.0
+        print("prune rate")
+        subnet3 = GetSubnet.apply(self.scores, pr)
         # print(self.clamped_scores)
-        print(torch.sum((subnet2 != subnet3).float())/subnet1.nelement())
+        print((subnet2 != subnet3).float().mean().item())
         subnet = None
         if self.training:
             subnet = subnet1
