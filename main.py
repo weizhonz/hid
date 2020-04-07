@@ -45,7 +45,11 @@ def main():
         torch.cuda.manual_seed_all(args.seed)
 
     # Simply call main_worker function
-    main_worker(args)
+    try:
+        main_worker(args)
+    except KeyboardInterrupt as e:
+        print("rep_count: ", args.rep_count)
+
 
 
 def main_worker(args):
@@ -217,6 +221,7 @@ def main_worker(args):
 
         writer.add_scalar("test/lr", cur_lr, epoch)
         end_epoch = time.time()
+
 
     write_result_to_csv(
         best_acc1=best_acc1,
